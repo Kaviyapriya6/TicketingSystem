@@ -215,7 +215,7 @@ const LoginPage = () => {
           {/* Forgot Password Link */}
           <Box sx={{ textAlign: 'right', marginTop: 1, marginBottom: 2 }}>
             <Link 
-              href="#" 
+              href="/auth/forgot-password" 
               sx={{ 
                 color: 'primary.main',
                 textDecoration: 'none',
