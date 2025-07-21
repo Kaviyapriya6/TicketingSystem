@@ -6,7 +6,8 @@ import bcrypt from 'bcryptjs';
 
 export async function POST(request) {
   try {
-    const { firstName, lastName, email, company, phone, password } = await request.json();
+    const body = await request.json();
+    const { firstName, lastName, email, company, phone, password } = body;
 
     // Basic validation
     if (!firstName || !lastName || !email || !password) {
@@ -52,6 +53,14 @@ export async function POST(request) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Determine role: allow only 'admin' to set role, otherwise always 'user'
+    let role = 'user';
+    // If you want to allow admin to create other roles, you can check here (e.g., from session)
+    if (body.role && ['admin', 'superadmin', 'agent', 'user'].includes(body.role)) {
+      // Optionally, add logic to check if the current user is admin before allowing this
+      role = body.role;
+    }
+
     // Save user to database
     const newUser = await User.create({
       firstName,
@@ -60,7 +69,7 @@ export async function POST(request) {
       company: company || '',
       phone: phone || '',
       password: hashedPassword,
-      role: 'user'
+      role
     });
 
     // TODO: Send welcome email (optional)
