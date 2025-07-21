@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import {
   Box, TextField, Button, Typography, Avatar, Paper, Grid, Alert, MenuItem,
-  FormControl, InputLabel, Select, IconButton, Chip
+  FormControl, InputLabel, Select, IconButton, Chip, Container, Stack
 } from '@mui/material';
 import { PhotoCamera, Delete, Add } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
@@ -143,171 +143,370 @@ const ContactForm = ({ onSubmit, initialData = {}, isEdit = false }) => {
   };
 
   return (
-    <Paper elevation={3} sx={{ p: 4, maxWidth: 800, mx: 'auto',fontweight: 'bold' }}>
-      <Typography variant="h4" gutterBottom>
-        {isEdit ? 'Edit Contact' : 'Create New Contact'}
-      </Typography>
+    <Container 
+      maxWidth={false} 
+      sx={{ 
+        minHeight: '100vh',
+        bgcolor: '#f5f5f5',
+        py: 3,
+        px: 2
+      }}
+    >
+      <Box sx={{ width: '100%', height: '100%' }}>
+        {/* Header */}
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" component="h1" gutterBottom sx={{ 
+            fontWeight: 600, 
+            color: '#333',
+            mb: 1
+          }}>
+            {isEdit ? 'Edit Contact' : 'Create New Contact'}
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            {isEdit ? 'Update contact information and details' : 'Add a new contact to your database'}
+          </Typography>
+        </Box>
 
-      <Formik
-        enableReinitialize={true}
-        initialValues={{
-          name: parsedFormData.name || initialData.name || '',
-          title: parsedFormData.title || initialData.title || '',
-          company: selectedCompany || parsedFormData.company || initialData.company || '',
-          email: parsedFormData.email || initialData.email || '',
-          phone: parsedFormData.phone || initialData.phone || '',
-          workPhone: parsedFormData.workPhone || initialData.workPhone || '',
-          twitter: parsedFormData.twitter || initialData.twitter || '',
-          facebook: parsedFormData.facebook || initialData.facebook || '',
-          tags: parsedFormData.tags || initialData.tags || [],
-          timezone: parsedFormData.timezone || initialData.timezone || '',
-          profileImage: parsedFormData.profileImage || initialData.profileImage || null,
-        }}
-        validationSchema={validationSchema}
-        onSubmit={async (values, { setSubmitting }) => {
-          setServerError('');
-          try {
-            await onSubmit(values);
-          } catch (err) {
-            setServerError(err.message || 'Something went wrong.');
-          } finally {
-            setSubmitting(false);
-          }
-        }}
-      >
-        {({ values, setFieldValue, isSubmitting }) => (
-          <Form>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-              <Avatar src={imagePreview} sx={{ width: 100, height: 100, mr: 2 }}>
-                {values.name.charAt(0).toUpperCase()}
-              </Avatar>
-              <Box>
-                <input
-                  accept="image/*"
-                  style={{ display: 'none' }}
-                  id="profile-image-upload"
-                  type="file"
-                  onChange={(e) => handleImageUpload(e, setFieldValue)}
-                />
-                <label htmlFor="profile-image-upload">
-                  <IconButton color="primary" component="span">
-                    <PhotoCamera />
-                  </IconButton>
-                </label>
-                {imagePreview && (
-                  <IconButton color="error" onClick={() => handleRemoveImage(setFieldValue)}>
-                    <Delete />
-                  </IconButton>
-                )}
-              </Box>
-            </Box>
+        <Formik
+          enableReinitialize={true}
+          initialValues={{
+            name: parsedFormData.name || initialData.name || '',
+            title: parsedFormData.title || initialData.title || '',
+            company: selectedCompany || parsedFormData.company || initialData.company || '',
+            email: parsedFormData.email || initialData.email || '',
+            phone: parsedFormData.phone || initialData.phone || '',
+            workPhone: parsedFormData.workPhone || initialData.workPhone || '',
+            twitter: parsedFormData.twitter || initialData.twitter || '',
+            facebook: parsedFormData.facebook || initialData.facebook || '',
+            tags: parsedFormData.tags || initialData.tags || [],
+            timezone: parsedFormData.timezone || initialData.timezone || '',
+            profileImage: parsedFormData.profileImage || initialData.profileImage || null,
+          }}
+          validationSchema={validationSchema}
+          onSubmit={async (values, { setSubmitting }) => {
+            setServerError('');
+            try {
+              await onSubmit(values);
+            } catch (err) {
+              setServerError(err.message || 'Something went wrong.');
+            } finally {
+              setSubmitting(false);
+            }
+          }}
+        >
+          {({ values, setFieldValue, isSubmitting }) => (
+            <Form>
+              {/* Horizontal Layout - Two Column Structure */}
+              <Grid container spacing={4}>
+                {/* Left Column */}
+                <Grid item xs={12} lg={6}>
+                  <Stack spacing={4}>
+                    {/* Profile & Basic Info */}
+                    <Paper sx={{ p: 3 }}>
+                      <Typography variant="h6" sx={{ mb: 3, color: '#333', fontWeight: 600 }}>
+                        Profile Information
+                      </Typography>
+                      
+                      {/* Profile Image */}
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
+                        <Avatar 
+                          src={imagePreview} 
+                          sx={{ 
+                            width: 80, 
+                            height: 80, 
+                            mr: 3,
+                            bgcolor: '#e0e0e0',
+                            fontSize: '2rem'
+                          }}
+                        >
+                          {values.name.charAt(0).toUpperCase()}
+                        </Avatar>
+                        <Box>
+                          <input
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                            id="profile-image-upload"
+                            type="file"
+                            onChange={(e) => handleImageUpload(e, setFieldValue)}
+                          />
+                          <label htmlFor="profile-image-upload">
+                            <Button 
+                              variant="outlined" 
+                              component="span"
+                              startIcon={<PhotoCamera />}
+                              size="small"
+                            >
+                              Upload Photo
+                            </Button>
+                          </label>
+                          {imagePreview && (
+                            <Button
+                              onClick={() => handleRemoveImage(setFieldValue)}
+                              size="small"
+                              sx={{ ml: 1, color: 'error.main' }}
+                            >
+                              Remove
+                            </Button>
+                          )}
+                        </Box>
+                      </Box>
 
-            <Grid container spacing={3}>
-              {['name', 'title', 'email', 'phone', 'workPhone', 'twitter', 'facebook'].map((field) => (
-                <Grid item xs={12} md={6} key={field}>
-                  <Field
-                    as={TextField}
-                    fullWidth
-                    name={field}
-                    label={field.charAt(0).toUpperCase() + field.slice(1)}
-                    helperText={<ErrorMessage name={field} />}
-                  />
+                      <Grid container spacing={3}>
+                        <Grid item xs={12}>
+                          <Field
+                            as={TextField}
+                            fullWidth
+                            name="name"
+                            label="Full Name *"
+                            helperText={<ErrorMessage name="name" />}
+                          />
+                        </Grid>
+
+                        <Grid item xs={12}>
+                          <Field
+                            as={TextField}
+                            fullWidth
+                            name="title"
+                            label="Job Title"
+                            helperText={<ErrorMessage name="title" />}
+                          />
+                        </Grid>
+
+                        <Grid item xs={12}>
+                          <Field
+                            as={TextField}
+                            fullWidth
+                            name="email"
+                            label="Email Address *"
+                            type="email"
+                            helperText={<ErrorMessage name="email" />}
+                          />
+                        </Grid>
+                      </Grid>
+                    </Paper>
+
+                    {/* Contact Information */}
+                    <Paper sx={{ p: 3 }}>
+                      <Typography variant="h6" sx={{ mb: 3, color: '#333', fontWeight: 600 }}>
+                        Contact Details
+                      </Typography>
+                      
+                      <Grid container spacing={3}>
+                        <Grid item xs={12} sm={6}>
+                          <Field
+                            as={TextField}
+                            fullWidth
+                            name="phone"
+                            label="Phone Number"
+                            helperText={<ErrorMessage name="phone" />}
+                          />
+                        </Grid>
+
+                        <Grid item xs={12} sm={6}>
+                          <Field
+                            as={TextField}
+                            fullWidth
+                            name="workPhone"
+                            label="Work Phone"
+                            helperText={<ErrorMessage name="workPhone" />}
+                          />
+                        </Grid>
+
+                        <Grid item xs={12} sm={6}>
+                          <Field
+                            as={TextField}
+                            fullWidth
+                            name="twitter"
+                            label="Twitter Handle"
+                            placeholder="@username"
+                            helperText={<ErrorMessage name="twitter" />}
+                          />
+                        </Grid>
+
+                        <Grid item xs={12} sm={6}>
+                          <Field
+                            as={TextField}
+                            fullWidth
+                            name="facebook"
+                            label="Facebook Profile"
+                            helperText={<ErrorMessage name="facebook" />}
+                          />
+                        </Grid>
+                      </Grid>
+                    </Paper>
+                  </Stack>
                 </Grid>
-              ))}
 
-              <Grid item xs={12} md={6}>
-                <FormControl fullWidth>
-                  <InputLabel>Company</InputLabel>
-                  <Select
-                    name="company"
-                    value={values.company}
-                    onChange={(e) => {
-                      if (e.target.value === 'CREATE_NEW') {
-                        handleCreateNewCompany();
-                      } else {
-                        setFieldValue('company', e.target.value);
-                      }
-                    }}
-                    disabled={loadingCompanies}
-                  >
-                    <MenuItem value="">
-                      <em>No company selected</em>
-                    </MenuItem>
-                    <MenuItem value="CREATE_NEW" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
-                      <Add sx={{ mr: 1, fontSize: '1rem' }} />
-                      + Create New Company
-                    </MenuItem>
-                    {companies.map((company) => (
-                      <MenuItem key={company._id} value={company.name}>
-                        {company.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {loadingCompanies && (
-                    <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
-                      Loading companies...
-                    </Typography>
-                  )}
-                  {!loadingCompanies && companies.length === 0 && (
-                    <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
-                      No companies available. Create companies first.
-                    </Typography>
-                  )}
-                </FormControl>
+                {/* Right Column - Reordered sections */}
+                <Grid item xs={12} lg={6}>
+                  <Stack spacing={4}>
+                    {/* Tags - Now positioned BEHIND Organization & Settings */}
+                    <Paper sx={{ p: 3 }}>
+                      <Typography variant="h6" sx={{ mb: 3, color: '#333', fontWeight: 600 }}>
+                        Tags & Labels
+                      </Typography>
+                      
+                      <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
+                        Add tags to categorize and organize your contacts
+                      </Typography>
+                      
+                      <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'flex-end' }}>
+                        <TextField
+                          fullWidth
+                          size="small"
+                          label="Add tag"
+                          value={currentTag}
+                          onChange={(e) => setCurrentTag(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              handleAddTag(values, setFieldValue);
+                            }
+                          }}
+                        />
+                        <Button 
+                          variant="outlined"
+                          onClick={() => handleAddTag(values, setFieldValue)}
+                          disabled={!currentTag.trim()}
+                          startIcon={<Add />}
+                        >
+                          Add
+                        </Button>
+                      </Box>
+                      
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                        {values.tags.map((tag) => (
+                          <Chip 
+                            key={tag} 
+                            label={tag} 
+                            onDelete={() => handleRemoveTag(tag, values, setFieldValue)}
+                            variant="outlined"
+                          />
+                        ))}
+                      </Box>
+                      
+                      {values.tags.length === 0 && (
+                        <Box sx={{ 
+                          border: '1px dashed #ccc', 
+                          borderRadius: 1, 
+                          p: 2, 
+                          textAlign: 'center',
+                          bgcolor: '#fafafa',
+                          mt: 2
+                        }}>
+                          <Typography variant="body2" color="text.secondary">
+                            No tags added yet. Add tags to organize your contacts.
+                          </Typography>
+                        </Box>
+                      )}
+                    </Paper>
+
+                    {/* Organization & Settings - Now positioned AFTER Tags */}
+                    <Paper sx={{ p: 3 }}>
+                      <Typography variant="h6" sx={{ mb: 3, color: '#333', fontWeight: 600 }}>
+                        Organization & Settings
+                      </Typography>
+                      
+                      <Grid container spacing={3}>
+                        <Grid item xs={12}>
+                          <FormControl fullWidth>
+                            <InputLabel>Company</InputLabel>
+                            <Select
+                              name="company"
+                              value={values.company}
+                              onChange={(e) => {
+                                if (e.target.value === 'CREATE_NEW') {
+                                  handleCreateNewCompany();
+                                } else {
+                                  setFieldValue('company', e.target.value);
+                                }
+                              }}
+                              disabled={loadingCompanies}
+                              label="Company"
+                            >
+                              <MenuItem value="">
+                                <em>No company selected</em>
+                              </MenuItem>
+                              <MenuItem value="CREATE_NEW" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+                                <Add sx={{ mr: 1, fontSize: '1rem' }} />
+                                + Create New Company
+                              </MenuItem>
+                              {companies.map((company) => (
+                                <MenuItem key={company._id} value={company.name}>
+                                  {company.name}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                            {loadingCompanies && (
+                              <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
+                                Loading companies...
+                              </Typography>
+                            )}
+                            {!loadingCompanies && companies.length === 0 && (
+                              <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
+                                No companies available. Create companies first.
+                              </Typography>
+                            )}
+                          </FormControl>
+                        </Grid>
+
+                        <Grid item xs={12}>
+                          <FormControl fullWidth>
+                            <InputLabel>Timezone</InputLabel>
+                            <Select
+                              name="timezone"
+                              value={values.timezone}
+                              onChange={(e) => setFieldValue('timezone', e.target.value)}
+                              label="Timezone"
+                            >
+                              <MenuItem value="">
+                                <em>Select timezone</em>
+                              </MenuItem>
+                              {timezones.map((tz) => (
+                                <MenuItem key={tz} value={tz}>{tz}</MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Grid>
+                      </Grid>
+                    </Paper>
+                  </Stack>
+                </Grid>
               </Grid>
 
-              <Grid item xs={12} md={6}>
-                <FormControl fullWidth>
-                  <InputLabel>Timezone</InputLabel>
-                  <Select
-                    name="timezone"
-                    value={values.timezone}
-                    onChange={(e) => setFieldValue('timezone', e.target.value)}
-                  >
-                    {timezones.map((tz) => (
-                      <MenuItem key={tz} value={tz}>{tz}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              <Grid item xs={12}>
-                <Typography variant="subtitle1" gutterBottom>Tags</Typography>
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <TextField
-                    size="small"
-                    label="Add tag"
-                    value={currentTag}
-                    onChange={(e) => setCurrentTag(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        handleAddTag(values, setFieldValue);
-                      }
-                    }}
-                  />
-                  <Button onClick={() => handleAddTag(values, setFieldValue)}>Add</Button>
+              {/* Error Message */}
+              {serverError && (
+                <Box sx={{ mt: 4 }}>
+                  <Alert severity="error">
+                    {serverError}
+                  </Alert>
                 </Box>
-                <Box sx={{ mt: 1, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {values.tags.map((tag) => (
-                    <Chip key={tag} label={tag} onDelete={() => handleRemoveTag(tag, values, setFieldValue)} />
-                  ))}
-                </Box>
-              </Grid>
-            </Grid>
+              )}
 
-            {serverError && <Alert severity="error" sx={{ mt: 2 }}>{serverError}</Alert>}
-
-            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-              <Button variant="outlined" onClick={() => router.push('/contacts')}>Cancel</Button>
-              <Button type="submit" variant="contained" disabled={isSubmitting}>
-                {isEdit ? 'Update Contact' : 'Create Contact'}
-              </Button>
-            </Box>
-          </Form>
-        )}
-      </Formik>
-    </Paper>
+              {/* Action Buttons */}
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 4 }}>
+                <Button 
+                  variant="outlined" 
+                  size="large"
+                  onClick={() => router.push('/contacts')}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  variant="contained" 
+                  size="large"
+                  disabled={isSubmitting}
+                >
+                  {isEdit ? 'Update Contact' : 'Create Contact'}
+                </Button>
+              </Box>
+            </Form>
+          )}
+        </Formik>
+      </Box>
+    </Container>
   );
 };
 
