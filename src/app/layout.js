@@ -5,7 +5,7 @@ import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
 import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline, Box } from '@mui/material';
 
@@ -46,14 +46,28 @@ const theme = createTheme({
   },
 });
 
+
+
 function AppContent({ children }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const pathname = usePathname();
   const { user, loading } = useAuth();
+  const router = useRouter();
 
   // Routes that should not show sidebar/navbar
-  const publicRoutes = ['/', '/auth/login', '/auth/signup'];
+  const publicRoutes = ['/', '/auth/login', '/auth/signup', '/unauthorized' , '/auth/forgot-password'];
   const isPublicRoute = publicRoutes.includes(pathname);
+
+
+  // Combined redirect logic for unauthorized or unauthenticated users
+  useEffect(() => {
+    if (!loading && !isPublicRoute && !user) {
+      router.replace('/');
+    } else if (!loading && user && user.role !== 'superadmin' && !isPublicRoute) {
+      router.replace('/unauthorized');
+    }
+    // eslint-disable-next-line
+  }, [user, loading, isPublicRoute]);
 
   // Show loading state while checking authentication
   if (loading && !isPublicRoute) {
@@ -76,6 +90,10 @@ function AppContent({ children }) {
         {children}
       </Box>
     );
+  }
+
+  if ((!loading && !isPublicRoute && !user) || (user && user.role !== 'superadmin' && !isPublicRoute)) {
+    return null;
   }
 
   // For protected routes, show sidebar and navbar
