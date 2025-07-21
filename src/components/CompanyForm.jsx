@@ -505,7 +505,7 @@ export default function AddCompanyForm({ editMode = false, initialData = {} }) {
 
             {/* Field View Radio Buttons */}
             <div style={styles.radioGroup}>
-              <label style={styles.radioLabel}>
+              {/* <label style={styles.radioLabel}>
                 <input
                   type="radio"
                   name="fieldView"
@@ -514,9 +514,9 @@ export default function AddCompanyForm({ editMode = false, initialData = {} }) {
                   onChange={handleInputChange('fieldView')}
                   style={styles.radioInput}
                 />
-                <span style={styles.radioText}>Mandatory fields</span>
-              </label>
-              <label style={styles.radioLabel}>
+                
+              </label> */}
+              {/* <label style={styles.radioLabel}>
                 <input
                   type="radio"
                   name="fieldView"
@@ -525,12 +525,12 @@ export default function AddCompanyForm({ editMode = false, initialData = {} }) {
                   onChange={handleInputChange('fieldView')}
                   style={styles.radioInput}
                 />
-                <span style={styles.radioText}>All fields</span>
-              </label>
+                
+              </label> */}
             </div>
 
             {/* Search Field */}
-            <div style={styles.searchContainer}>
+            {/* <div style={styles.searchContainer}>
               <div style={styles.searchIcon}>
                 <SearchIcon />
               </div>
@@ -542,7 +542,7 @@ export default function AddCompanyForm({ editMode = false, initialData = {} }) {
                 className="form-input"
                 style={styles.searchInput}
               />
-            </div>
+            </div> */}
 
             {/* Form Fields */}
             <div>
