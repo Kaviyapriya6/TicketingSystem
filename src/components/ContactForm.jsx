@@ -1,14 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import {
-  Box, TextField, Button, Typography, Avatar, Paper, Grid, Alert, MenuItem,
-  FormControl, InputLabel, Select, IconButton, Chip, Container, Stack
-} from '@mui/material';
-import { PhotoCamera, Delete, Add } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Camera, Trash2, Plus } from 'lucide-react';
 
 const ContactForm = ({ onSubmit, initialData = {}, isEdit = false }) => {
   const router = useRouter();
@@ -82,7 +85,7 @@ const ContactForm = ({ onSubmit, initialData = {}, isEdit = false }) => {
       twitter: document.querySelector('input[name="twitter"]').value,
       facebook: document.querySelector('input[name="facebook"]').value,
       tags: currentTag ? [currentTag] : [],
-      timezone: document.querySelector('input[name="timezone"]')?.value || '',
+      timezone: document.querySelector('select[name="timezone"]')?.value || '',
       profileImage: imagePreview,
     };
     sessionStorage.setItem('contactFormData', JSON.stringify(formData));
@@ -143,29 +146,17 @@ const ContactForm = ({ onSubmit, initialData = {}, isEdit = false }) => {
   };
 
   return (
-    <Container 
-      maxWidth={false} 
-      sx={{ 
-        minHeight: '100vh',
-        bgcolor: '#f5f5f5',
-        py: 3,
-        px: 2
-      }}
-    >
-      <Box sx={{ width: '100%', height: '100%' }}>
+    <div className="min-h-screen bg-slate-50 py-6 px-4">
+      <div className="w-full h-full">
         {/* Header */}
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" component="h1" gutterBottom sx={{ 
-            fontWeight: 600, 
-            color: '#333',
-            mb: 1
-          }}>
+        <div className="mb-8">
+          <h1 className="text-2xl font-semibold text-slate-900 mb-1">
             {isEdit ? 'Edit Contact' : 'Create New Contact'}
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
+          </h1>
+          <p className="text-slate-500">
             {isEdit ? 'Update contact information and details' : 'Add a new contact to your database'}
-          </Typography>
-        </Box>
+          </p>
+        </div>
 
         <Formik
           enableReinitialize={true}
@@ -194,319 +185,324 @@ const ContactForm = ({ onSubmit, initialData = {}, isEdit = false }) => {
             }
           }}
         >
-          {({ values, setFieldValue, isSubmitting }) => (
+          {({ values, setFieldValue, isSubmitting, errors, touched }) => (
             <Form>
-              {/* Horizontal Layout - Two Column Structure */}
-              <Grid container spacing={4}>
+              {/* Two Column Layout */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Left Column */}
-                <Grid item xs={12} lg={6}>
-                  <Stack spacing={4}>
-                    {/* Profile & Basic Info */}
-                    <Paper sx={{ p: 3 }}>
-                      <Typography variant="h6" sx={{ mb: 3, color: '#333', fontWeight: 600 }}>
-                        Profile Information
-                      </Typography>
-                      
-                      {/* Profile Image */}
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-                        <Avatar 
-                          src={imagePreview} 
-                          sx={{ 
-                            width: 80, 
-                            height: 80, 
-                            mr: 3,
-                            bgcolor: '#e0e0e0',
-                            fontSize: '2rem'
-                          }}
-                        >
+                <div className="space-y-8">
+                  {/* Profile & Basic Info */}
+                  <Card className="p-6">
+                    <h2 className="text-lg font-semibold text-slate-900 mb-6">
+                      Profile Information
+                    </h2>
+                    
+                    {/* Profile Image */}
+                    <div className="flex items-center mb-8">
+                      <Avatar className="w-20 h-20 mr-6">
+                        <AvatarImage src={imagePreview} alt={values.name} />
+                        <AvatarFallback>
                           {values.name.charAt(0).toUpperCase()}
-                        </Avatar>
-                        <Box>
-                          <input
-                            accept="image/*"
-                            style={{ display: 'none' }}
-                            id="profile-image-upload"
-                            type="file"
-                            onChange={(e) => handleImageUpload(e, setFieldValue)}
-                          />
-                          <label htmlFor="profile-image-upload">
-                            <Button 
-                              variant="outlined" 
-                              component="span"
-                              startIcon={<PhotoCamera />}
-                              size="small"
-                            >
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <input
+                          accept="image/*"
+                          className="hidden"
+                          id="profile-image-upload"
+                          type="file"
+                          onChange={(e) => handleImageUpload(e, setFieldValue)}
+                        />
+                        <label htmlFor="profile-image-upload">
+                          <Button
+                            variant="outline"
+                            className="mr-2"
+                            asChild
+                          >
+                            <span>
+                              <Camera className="w-4 h-4 mr-2" />
                               Upload Photo
-                            </Button>
-                          </label>
-                          {imagePreview && (
-                            <Button
-                              onClick={() => handleRemoveImage(setFieldValue)}
-                              size="small"
-                              sx={{ ml: 1, color: 'error.main' }}
-                            >
-                              Remove
-                            </Button>
+                            </span>
+                          </Button>
+                        </label>
+                        {imagePreview && (
+                          <Button
+                            variant="ghost"
+                            onClick={() => handleRemoveImage(setFieldValue)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Remove
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div>
+                        <Field name="name">
+                          {({ field }) => (
+                            <Input
+                              {...field}
+                              placeholder="Full Name"
+                              error={touched.name && errors.name}
+                            />
                           )}
-                        </Box>
-                      </Box>
+                        </Field>
+                      </div>
 
-                      <Grid container spacing={3}>
-                        <Grid item xs={12}>
-                          <Field
-                            as={TextField}
-                            fullWidth
-                            name="name"
-                            label="Full Name *"
-                            helperText={<ErrorMessage name="name" />}
-                          />
-                        </Grid>
+                      <div>
+                        <Field name="title">
+                          {({ field }) => (
+                            <Input
+                              {...field}
+                              placeholder="Job Title"
+                              error={touched.title && errors.title}
+                            />
+                          )}
+                        </Field>
+                      </div>
 
-                        <Grid item xs={12}>
-                          <Field
-                            as={TextField}
-                            fullWidth
-                            name="title"
-                            label="Job Title"
-                            helperText={<ErrorMessage name="title" />}
-                          />
-                        </Grid>
+                      <div>
+                        <Field name="email">
+                          {({ field }) => (
+                            <Input
+                              {...field}
+                              type="email"
+                              placeholder="Email Address"
+                              error={touched.email && errors.email}
+                            />
+                          )}
+                        </Field>
+                      </div>
+                    </div>
+                  </Card>
 
-                        <Grid item xs={12}>
-                          <Field
-                            as={TextField}
-                            fullWidth
-                            name="email"
-                            label="Email Address *"
-                            type="email"
-                            helperText={<ErrorMessage name="email" />}
-                          />
-                        </Grid>
-                      </Grid>
-                    </Paper>
+                  {/* Contact Information */}
+                  <Card className="p-6">
+                    <h2 className="text-lg font-semibold text-slate-900 mb-6">
+                      Contact Details
+                    </h2>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <Field name="phone">
+                          {({ field }) => (
+                            <Input
+                              {...field}
+                              placeholder="Phone Number"
+                              error={touched.phone && errors.phone}
+                            />
+                          )}
+                        </Field>
+                      </div>
 
-                    {/* Contact Information */}
-                    <Paper sx={{ p: 3 }}>
-                      <Typography variant="h6" sx={{ mb: 3, color: '#333', fontWeight: 600 }}>
-                        Contact Details
-                      </Typography>
-                      
-                      <Grid container spacing={3}>
-                        <Grid item xs={12} sm={6}>
-                          <Field
-                            as={TextField}
-                            fullWidth
-                            name="phone"
-                            label="Phone Number"
-                            helperText={<ErrorMessage name="phone" />}
-                          />
-                        </Grid>
+                      <div>
+                        <Field name="workPhone">
+                          {({ field }) => (
+                            <Input
+                              {...field}
+                              placeholder="Work Phone"
+                              error={touched.workPhone && errors.workPhone}
+                            />
+                          )}
+                        </Field>
+                      </div>
 
-                        <Grid item xs={12} sm={6}>
-                          <Field
-                            as={TextField}
-                            fullWidth
-                            name="workPhone"
-                            label="Work Phone"
-                            helperText={<ErrorMessage name="workPhone" />}
-                          />
-                        </Grid>
+                      <div>
+                        <Field name="twitter">
+                          {({ field }) => (
+                            <Input
+                              {...field}
+                              placeholder="Twitter Handle (@username)"
+                              error={touched.twitter && errors.twitter}
+                            />
+                          )}
+                        </Field>
+                      </div>
 
-                        <Grid item xs={12} sm={6}>
-                          <Field
-                            as={TextField}
-                            fullWidth
-                            name="twitter"
-                            label="Twitter Handle"
-                            placeholder="@username"
-                            helperText={<ErrorMessage name="twitter" />}
-                          />
-                        </Grid>
+                      <div>
+                        <Field name="facebook">
+                          {({ field }) => (
+                            <Input
+                              {...field}
+                              placeholder="Facebook Profile"
+                              error={touched.facebook && errors.facebook}
+                            />
+                          )}
+                        </Field>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
 
-                        <Grid item xs={12} sm={6}>
-                          <Field
-                            as={TextField}
-                            fullWidth
-                            name="facebook"
-                            label="Facebook Profile"
-                            helperText={<ErrorMessage name="facebook" />}
-                          />
-                        </Grid>
-                      </Grid>
-                    </Paper>
-                  </Stack>
-                </Grid>
+                {/* Right Column */}
+                <div className="space-y-8">
+                  {/* Tags */}
+                  <Card className="p-6">
+                    <h2 className="text-lg font-semibold text-slate-900 mb-6">
+                      Tags & Labels
+                    </h2>
+                    
+                    <p className="text-sm text-slate-500 mb-4">
+                      Add tags to categorize and organize your contacts
+                    </p>
+                    
+                    <div className="flex gap-4 mb-4">
+                      <Input
+                        value={currentTag}
+                        onChange={(e) => setCurrentTag(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleAddTag(values, setFieldValue);
+                          }
+                        }}
+                        placeholder="Add tag"
+                        className="flex-1"
+                      />
+                      <Button
+                        variant="outline"
+                        onClick={() => handleAddTag(values, setFieldValue)}
+                        disabled={!currentTag.trim()}
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add
+                      </Button>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2">
+                      {values.tags.map((tag) => (
+                        <Badge
+                          key={tag}
+                          variant="secondary"
+                          className="cursor-pointer hover:bg-slate-200"
+                          onClick={() => handleRemoveTag(tag, values, setFieldValue)}
+                        >
+                          {tag}
+                          <Trash2 className="w-3 h-3 ml-1" />
+                        </Badge>
+                      ))}
+                    </div>
+                    
+                    {values.tags.length === 0 && (
+                      <div className="border border-dashed border-slate-200 rounded-lg p-4 text-center bg-slate-50 mt-4">
+                        <p className="text-sm text-slate-500">
+                          No tags added yet. Add tags to organize your contacts.
+                        </p>
+                      </div>
+                    )}
+                  </Card>
 
-                {/* Right Column - Reordered sections */}
-                <Grid item xs={12} lg={6}>
-                  <Stack spacing={4}>
-                    {/* Tags - Now positioned BEHIND Organization & Settings */}
-                    <Paper sx={{ p: 3 }}>
-                      <Typography variant="h6" sx={{ mb: 3, color: '#333', fontWeight: 600 }}>
-                        Tags & Labels
-                      </Typography>
-                      
-                      <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
-                        Add tags to categorize and organize your contacts
-                      </Typography>
-                      
-                      <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'flex-end' }}>
-                        <TextField
-                          fullWidth
-                          size="small"
-                          label="Add tag"
-                          value={currentTag}
-                          onChange={(e) => setCurrentTag(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              e.preventDefault();
-                              handleAddTag(values, setFieldValue);
+                  {/* Organization & Settings */}
+                  <Card className="p-6">
+                    <h2 className="text-lg font-semibold text-slate-900 mb-6">
+                      Organization & Settings
+                    </h2>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <Select
+                          value={values.company || "none"}
+                          onValueChange={(value) => {
+                            if (value === 'CREATE_NEW') {
+                              handleCreateNewCompany();
+                            } else if (value === 'none') {
+                              setFieldValue('company', '');
+                            } else {
+                              setFieldValue('company', value);
                             }
                           }}
-                        />
-                        <Button 
-                          variant="outlined"
-                          onClick={() => handleAddTag(values, setFieldValue)}
-                          disabled={!currentTag.trim()}
-                          startIcon={<Add />}
+                          disabled={loadingCompanies}
                         >
-                          Add
-                        </Button>
-                      </Box>
-                      
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                        {values.tags.map((tag) => (
-                          <Chip 
-                            key={tag} 
-                            label={tag} 
-                            onDelete={() => handleRemoveTag(tag, values, setFieldValue)}
-                            variant="outlined"
-                          />
-                        ))}
-                      </Box>
-                      
-                      {values.tags.length === 0 && (
-                        <Box sx={{ 
-                          border: '1px dashed #ccc', 
-                          borderRadius: 1, 
-                          p: 2, 
-                          textAlign: 'center',
-                          bgcolor: '#fafafa',
-                          mt: 2
-                        }}>
-                          <Typography variant="body2" color="text.secondary">
-                            No tags added yet. Add tags to organize your contacts.
-                          </Typography>
-                        </Box>
-                      )}
-                    </Paper>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select company" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">
+                              No company selected
+                            </SelectItem>
+                            <SelectItem value="CREATE_NEW" className="text-blue-600 font-medium">
+                              <Plus className="w-4 h-4 mr-2 inline-block" />
+                              Create New Company
+                            </SelectItem>
+                            {companies.map((company) => (
+                              <SelectItem key={company._id} value={company.name}>
+                                {company.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {loadingCompanies && (
+                          <p className="text-xs text-slate-500 mt-1">
+                            Loading companies...
+                          </p>
+                        )}
+                        {!loadingCompanies && companies.length === 0 && (
+                          <p className="text-xs text-slate-500 mt-1">
+                            No companies available. Create companies first.
+                          </p>
+                        )}
+                      </div>
 
-                    {/* Organization & Settings - Now positioned AFTER Tags */}
-                    <Paper sx={{ p: 3 }}>
-                      <Typography variant="h6" sx={{ mb: 3, color: '#333', fontWeight: 600 }}>
-                        Organization & Settings
-                      </Typography>
-                      
-                      <Grid container spacing={3}>
-                        <Grid item xs={12}>
-                          <FormControl fullWidth>
-                            <InputLabel>Company</InputLabel>
-                            <Select
-                              name="company"
-                              value={values.company}
-                              onChange={(e) => {
-                                if (e.target.value === 'CREATE_NEW') {
-                                  handleCreateNewCompany();
-                                } else {
-                                  setFieldValue('company', e.target.value);
-                                }
-                              }}
-                              disabled={loadingCompanies}
-                              label="Company"
-                            >
-                              <MenuItem value="">
-                                <em>No company selected</em>
-                              </MenuItem>
-                              <MenuItem value="CREATE_NEW" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
-                                <Add sx={{ mr: 1, fontSize: '1rem' }} />
-                                + Create New Company
-                              </MenuItem>
-                              {companies.map((company) => (
-                                <MenuItem key={company._id} value={company.name}>
-                                  {company.name}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                            {loadingCompanies && (
-                              <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
-                                Loading companies...
-                              </Typography>
-                            )}
-                            {!loadingCompanies && companies.length === 0 && (
-                              <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
-                                No companies available. Create companies first.
-                              </Typography>
-                            )}
-                          </FormControl>
-                        </Grid>
-
-                        <Grid item xs={12}>
-                          <FormControl fullWidth>
-                            <InputLabel>Timezone</InputLabel>
-                            <Select
-                              name="timezone"
-                              value={values.timezone}
-                              onChange={(e) => setFieldValue('timezone', e.target.value)}
-                              label="Timezone"
-                            >
-                              <MenuItem value="">
-                                <em>Select timezone</em>
-                              </MenuItem>
-                              {timezones.map((tz) => (
-                                <MenuItem key={tz} value={tz}>{tz}</MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                        </Grid>
-                      </Grid>
-                    </Paper>
-                  </Stack>
-                </Grid>
-              </Grid>
+                      <div>
+                        <Select
+                          value={values.timezone || "none"}
+                          onValueChange={(value) => setFieldValue('timezone', value === 'none' ? '' : value)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select timezone" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">
+                              Select timezone
+                            </SelectItem>
+                            {timezones.map((tz) => (
+                              <SelectItem key={tz} value={tz}>
+                                {tz}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+              </div>
 
               {/* Error Message */}
               {serverError && (
-                <Box sx={{ mt: 4 }}>
-                  <Alert severity="error">
-                    {serverError}
+                <div className="mt-8">
+                  <Alert variant="destructive">
+                    <AlertDescription>
+                      {serverError}
+                    </AlertDescription>
                   </Alert>
-                </Box>
+                </div>
               )}
 
               {/* Action Buttons */}
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 4 }}>
-                <Button 
-                  variant="outlined" 
-                  size="large"
+              <div className="flex justify-end gap-4 mt-8">
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => router.push('/contacts')}
                   disabled={isSubmitting}
                 >
                   Cancel
                 </Button>
-                <Button 
-                  type="submit" 
-                  variant="contained" 
-                  size="large"
+                <Button
+                  type="submit"
                   disabled={isSubmitting}
                 >
                   {isEdit ? 'Update Contact' : 'Create Contact'}
                 </Button>
-              </Box>
+              </div>
             </Form>
           )}
         </Formik>
-      </Box>
-    </Container>
+      </div>
+    </div>
   );
 };
 

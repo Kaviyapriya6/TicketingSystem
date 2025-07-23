@@ -2,30 +2,31 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
+import { Progress } from "@/components/ui/progress";
 import {
-  Box, Typography, Button, Chip, Paper, Stack, Card, CardContent,
-  LinearProgress, IconButton, List, ListItem, ListItemText, ListItemIcon,
-  Checkbox, Avatar, Divider
-} from '@mui/material';
-import {
-  Dashboard as DashboardIcon,
-  TrendingUp as TrendingUpIcon,
-  Assignment as AssignmentIcon,
-  Schedule as ScheduleIcon,
-  CheckCircle as CheckCircleIcon,
-  HourglassEmpty as HourglassEmptyIcon,
-  Person as PersonIcon,
-  Add as AddIcon,
-  ArrowUpward as ArrowUpwardIcon,
-  ArrowDownward as ArrowDownwardIcon,
-  AccessTime as AccessTimeIcon,
-  SentimentSatisfied as SentimentSatisfiedIcon,
-  SentimentNeutral as SentimentNeutralIcon,
-  SentimentDissatisfied as SentimentDissatisfiedIcon,
-  Notifications as NotificationsIcon,
-  Groups as GroupsIcon
-} from '@mui/icons-material';
+  LayoutDashboard,
+  TrendingUp,
+  ClipboardList,
+  Clock,
+  CheckCircle2,
+  Hourglass,
+  User,
+  Plus,
+  ArrowUp,
+  ArrowDown,
+  Timer,
+  SmilePlus,
+  Meh,
+  Frown,
+  Bell,
+  Users
+} from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { cn } from "@/lib/utils";
 
 export default function DashboardPage() {
   const [tickets, setTickets] = useState([]);
@@ -128,134 +129,93 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <Box sx={{ 
-        minHeight: '100vh', 
-        bgcolor: '#f8fafc',
-        p: 3,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        <LinearProgress sx={{ width: '100%', maxWidth: 400 }} />
-      </Box>
+      <div className="min-h-screen bg-slate-50 p-3 flex items-center justify-center">
+        <Progress value={null} className="w-full max-w-md" />
+      </div>
     );
   }
 
   return (
-    <Box sx={{ 
-      minHeight: '100vh', 
-      bgcolor: '#f8fafc',
-      p: 3
-    }}>
-      <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
-        {/* Header */}
-        
-
+    <div className="min-h-screen bg-slate-50 p-3">
+      <div className="max-w-[1400px] mx-auto">
         {/* Main Stats Cards */}
-        <Box sx={{ mb: 4 }}>
-          <Stack direction="row" spacing={3}>
-            <Card sx={{ 
-              flex: 1, 
-              border: '1px solid #e2e8f0',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-            }}>
-              <CardContent sx={{ p: 3 }}>
-                <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500, mb: 1 }}>
+        <div className="mb-4">
+          <div className="flex gap-3">
+            <Card className="flex-1 border border-slate-200">
+              <div className="p-3">
+                <p className="text-sm font-medium text-slate-500 mb-1">
                   Unresolved
-                </Typography>
-                <Typography variant="h3" sx={{ fontWeight: 700, color: '#1e293b' }}>
+                </p>
+                <p className="text-3xl font-bold text-slate-800">
                   {stats.unresolved}
-                </Typography>
-              </CardContent>
+                </p>
+              </div>
             </Card>
-            <Card sx={{ 
-              flex: 1, 
-              border: '1px solid #e2e8f0',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-            }}>
-              <CardContent sx={{ p: 3 }}>
-                <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500, mb: 1 }}>
+            <Card className="flex-1 border border-slate-200">
+              <div className="p-3">
+                <p className="text-sm font-medium text-slate-500 mb-1">
                   Overdue
-                </Typography>
-                <Typography variant="h3" sx={{ fontWeight: 700, color: '#d32f2f' }}>
+                </p>
+                <p className="text-3xl font-bold text-red-600">
                   {stats.overdue}
-                </Typography>
-              </CardContent>
+                </p>
+              </div>
             </Card>
-            <Card sx={{ 
-              flex: 1, 
-              border: '1px solid #e2e8f0',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-            }}>
-              <CardContent sx={{ p: 3 }}>
-                <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500, mb: 1 }}>
+            <Card className="flex-1 border border-slate-200">
+              <div className="p-3">
+                <p className="text-sm font-medium text-slate-500 mb-1">
                   Due today
-                </Typography>
-                <Typography variant="h3" sx={{ fontWeight: 700, color: '#f57c00' }}>
+                </p>
+                <p className="text-3xl font-bold text-orange-600">
                   {stats.dueToday}
-                </Typography>
-              </CardContent>
+                </p>
+              </div>
             </Card>
-            <Card sx={{ 
-              flex: 1, 
-              border: '1px solid #e2e8f0',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-            }}>
-              <CardContent sx={{ p: 3 }}>
-                <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500, mb: 1 }}>
+            <Card className="flex-1 border border-slate-200">
+              <div className="p-3">
+                <p className="text-sm font-medium text-slate-500 mb-1">
                   Open
-                </Typography>
-                <Typography variant="h3" sx={{ fontWeight: 700, color: '#1976d2' }}>
+                </p>
+                <p className="text-3xl font-bold text-blue-600">
                   {stats.open}
-                </Typography>
-              </CardContent>
+                </p>
+              </div>
             </Card>
-            <Card sx={{ 
-              flex: 1, 
-              border: '1px solid #e2e8f0',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-            }}>
-              <CardContent sx={{ p: 3 }}>
-                <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500, mb: 1 }}>
+            <Card className="flex-1 border border-slate-200">
+              <div className="p-3">
+                <p className="text-sm font-medium text-slate-500 mb-1">
                   On hold
-                </Typography>
-                <Typography variant="h3" sx={{ fontWeight: 700, color: '#9c27b0' }}>
+                </p>
+                <p className="text-3xl font-bold text-purple-600">
                   {stats.onHold}
-                </Typography>
-              </CardContent>
+                </p>
+              </div>
             </Card>
-            <Card sx={{ 
-              flex: 1, 
-              border: '1px solid #e2e8f0',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-            }}>
-              <CardContent sx={{ p: 3 }}>
-                <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500, mb: 1 }}>
+            <Card className="flex-1 border border-slate-200">
+              <div className="p-3">
+                <p className="text-sm font-medium text-slate-500 mb-1">
                   Unassigned
-                </Typography>
-                <Typography variant="h3" sx={{ fontWeight: 700, color: '#795548' }}>
+                </p>
+                <p className="text-3xl font-bold text-brown-600">
                   {stats.unassigned}
-                </Typography>
-              </CardContent>
+                </p>
+              </div>
             </Card>
-          </Stack>
-        </Box>
+          </div>
+        </div>
 
         {/* Charts and Details Section */}
-        <Box sx={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 3, mb: 4 }}>
+        <div className="grid grid-cols-[2fr_1fr] gap-3 mb-4">
           {/* Today's Trends Chart */}
-          <Card sx={{ 
-            border: '1px solid #e2e8f0',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-          }}>
-            <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1e293b', mb: 1 }}>
+          <Card className="border border-slate-200">
+            <div className="p-3">
+              <h2 className="text-lg font-semibold text-slate-800 mb-1">
                 Today's trends
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#64748b', mb: 3 }}>
+              </h2>
+              <p className="text-sm text-slate-500 mb-3">
                 1st May 2018, 03:00 PM
-              </Typography>
-              <Box sx={{ height: 300 }}>
+              </p>
+              <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={trendsData}>
                     <XAxis 
@@ -268,250 +228,235 @@ export default function DashboardPage() {
                     <Line 
                       type="monotone" 
                       dataKey="value" 
-                      stroke="#1976d2" 
+                      stroke="#2563eb" 
                       strokeWidth={2}
                       dot={false}
                     />
                   </LineChart>
                 </ResponsiveContainer>
-              </Box>
-            </CardContent>
+              </div>
+            </div>
           </Card>
 
           {/* Performance Metrics */}
-          <Card sx={{ 
-            border: '1px solid #e2e8f0',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-          }}>
-            <CardContent sx={{ p: 3 }}>
-              <Stack spacing={3}>
-                <Box>
-                  <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>
+          <Card className="border border-slate-200">
+            <div className="p-3">
+              <div className="space-y-3">
+                <div>
+                  <p className="text-sm text-slate-500 mb-1">
                     Resolved
-                  </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b' }}>
+                  </p>
+                  <p className="text-2xl font-bold text-slate-800">
                     {stats.resolved}
-                  </Typography>
-                </Box>
+                  </p>
+                </div>
                 
-                <Box>
-                  <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>
+                <div>
+                  <p className="text-sm text-slate-500 mb-1">
                     Received
-                  </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b' }}>
+                  </p>
+                  <p className="text-2xl font-bold text-slate-800">
                     {stats.received}
-                  </Typography>
-                </Box>
+                  </p>
+                </div>
                 
-                <Box>
-                  <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>
+                <div>
+                  <p className="text-sm text-slate-500 mb-1">
                     Average first response time
-                  </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b' }}>
+                  </p>
+                  <p className="text-2xl font-bold text-slate-800">
                     12m
-                  </Typography>
-                </Box>
+                  </p>
+                </div>
                 
-                <Box>
-                  <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>
+                <div>
+                  <p className="text-sm text-slate-500 mb-1">
                     Average response time
-                  </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b' }}>
+                  </p>
+                  <p className="text-2xl font-bold text-slate-800">
                     24m 12s
-                  </Typography>
-                </Box>
+                  </p>
+                </div>
                 
-                <Box>
-                  <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>
+                <div>
+                  <p className="text-sm text-slate-500 mb-1">
                     Resolution within SLA
-                  </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b' }}>
+                  </p>
+                  <p className="text-2xl font-bold text-slate-800">
                     91%
-                  </Typography>
-                </Box>
-              </Stack>
-            </CardContent>
+                  </p>
+                </div>
+              </div>
+            </div>
           </Card>
-        </Box>
+        </div>
 
         {/* Bottom Section */}
-        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 3 }}>
+        <div className="grid grid-cols-3 gap-3">
           {/* Unresolved Tickets */}
-          <Card sx={{ 
-            border: '1px solid #e2e8f0',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-          }}>
-            <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1e293b', mb: 1 }}>
+          <Card className="border border-slate-200">
+            <div className="p-3">
+              <h2 className="text-lg font-semibold text-slate-800 mb-1">
                 Unresolved tickets
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#64748b', mb: 3 }}>
+              </h2>
+              <p className="text-sm text-slate-500 mb-3">
                 Across helpdesk
-              </Typography>
+              </p>
               
-              <Stack spacing={2}>
+              <div className="space-y-2">
                 {unresolvedBreakdown.map((group, index) => (
-                  <Box key={index}>
-                    <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
-                      <Typography variant="body2" sx={{ color: '#1e293b', fontWeight: 500 }}>
+                  <div key={index}>
+                    <div className="flex justify-between items-center mb-1">
+                      <p className="text-sm font-medium text-slate-800">
                         {group.name}
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: '#64748b' }}>
+                      </p>
+                      <p className="text-sm text-slate-500">
                         {group.count}
-                      </Typography>
-                    </Stack>
-                    <LinearProgress 
-                      variant="determinate" 
-                      value={(group.count / 55) * 100} 
-                      sx={{ 
-                        height: 6, 
-                        borderRadius: 3,
-                        bgcolor: '#f1f5f9',
-                        '& .MuiLinearProgress-bar': {
-                          bgcolor: group.color,
-                          borderRadius: 3
-                        }
-                      }} 
+                      </p>
+                    </div>
+                    <Progress 
+                      value={(group.count / 55) * 100}
+                      className="h-1.5 rounded-full bg-slate-100"
+                      indicatorClassName={cn(
+                        "rounded-full",
+                        group.color === "#1976d2" && "bg-blue-600",
+                        group.color === "#f44336" && "bg-red-600",
+                        group.color === "#4caf50" && "bg-green-600"
+                      )}
                     />
-                  </Box>
+                  </div>
                 ))}
-              </Stack>
+              </div>
               
               <Button 
-                variant="text" 
-                size="small" 
-                sx={{ mt: 2, color: '#1976d2', fontWeight: 500 }}
+                variant="ghost"
+                size="sm"
+                className="mt-2 text-blue-600 font-medium hover:text-blue-700"
               >
                 View details
               </Button>
-            </CardContent>
+            </div>
           </Card>
 
           {/* Customer Satisfaction */}
-          <Card sx={{ 
-            border: '1px solid #e2e8f0',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-          }}>
-            <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1e293b', mb: 1 }}>
+          <Card className="border border-slate-200">
+            <div className="p-3">
+              <h2 className="text-lg font-semibold text-slate-800 mb-1">
                 Customer satisfaction
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#64748b', mb: 3 }}>
+              </h2>
+              <p className="text-sm text-slate-500 mb-3">
                 Across helpdesk this month
-              </Typography>
+              </p>
               
-              <Stack spacing={2}>
-                <Box>
-                  <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>
+              <div className="space-y-2">
+                <div>
+                  <p className="text-sm text-slate-500 mb-1">
                     Responses received
-                  </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b' }}>
+                  </p>
+                  <p className="text-2xl font-bold text-slate-800">
                     {satisfaction.responses}
-                  </Typography>
-                </Box>
+                  </p>
+                </div>
                 
-                <Box>
-                  <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
-                    <SentimentSatisfiedIcon sx={{ color: '#4caf50', fontSize: 20 }} />
-                    <Typography variant="body2" sx={{ color: '#1e293b', fontWeight: 500 }}>
+                <div>
+                  <div className="flex items-center gap-1 mb-1">
+                    <SmilePlus className="w-5 h-5 text-green-500" />
+                    <p className="text-sm font-medium text-slate-800">
                       Positive
-                    </Typography>
-                  </Stack>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#4caf50' }}>
+                    </p>
+                  </div>
+                  <p className="text-2xl font-bold text-green-500">
                     {satisfaction.positive}%
-                  </Typography>
-                </Box>
+                  </p>
+                </div>
                 
-                <Box>
-                  <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
-                    <SentimentNeutralIcon sx={{ color: '#ff9800', fontSize: 20 }} />
-                    <Typography variant="body2" sx={{ color: '#1e293b', fontWeight: 500 }}>
+                <div>
+                  <div className="flex items-center gap-1 mb-1">
+                    <Meh className="w-5 h-5 text-orange-500" />
+                    <p className="text-sm font-medium text-slate-800">
                       Neutral
-                    </Typography>
-                  </Stack>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#ff9800' }}>
+                    </p>
+                  </div>
+                  <p className="text-2xl font-bold text-orange-500">
                     {satisfaction.neutral}%
-                  </Typography>
-                </Box>
+                  </p>
+                </div>
                 
-                <Box>
-                  <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
-                    <SentimentDissatisfiedIcon sx={{ color: '#f44336', fontSize: 20 }} />
-                    <Typography variant="body2" sx={{ color: '#1e293b', fontWeight: 500 }}>
+                <div>
+                  <div className="flex items-center gap-1 mb-1">
+                    <Frown className="w-5 h-5 text-red-500" />
+                    <p className="text-sm font-medium text-slate-800">
                       Negative
-                    </Typography>
-                  </Stack>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#f44336' }}>
+                    </p>
+                  </div>
+                  <p className="text-2xl font-bold text-red-500">
                     {satisfaction.negative}%
-                  </Typography>
-                </Box>
-              </Stack>
-            </CardContent>
+                  </p>
+                </div>
+              </div>
+            </div>
           </Card>
 
           {/* To-do */}
-          <Card sx={{ 
-            border: '1px solid #e2e8f0',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-          }}>
-            <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1e293b', mb: 1 }}>
+          <Card className="border border-slate-200">
+            <div className="p-3">
+              <h2 className="text-lg font-semibold text-slate-800 mb-1">
                 To-do (2)
-              </Typography>
+              </h2>
               <Button 
-                variant="text" 
-                size="small" 
-                startIcon={<AddIcon />}
-                sx={{ color: '#1976d2', fontWeight: 500, mb: 2, p: 0 }}
+                variant="ghost"
+                size="sm"
+                className="text-blue-600 font-medium hover:text-blue-700 mb-2 p-0"
               >
+                <Plus className="w-4 h-4 mr-1" />
                 Add a to-do
               </Button>
               
-              <Stack spacing={2}>
-                <Box sx={{ p: 2, bgcolor: '#f8fafc', borderRadius: 1 }}>
-                  <Stack direction="row" alignItems="flex-start" spacing={1}>
-                    <Checkbox size="small" />
-                    <Box sx={{ flex: 1 }}>
-                      <Typography variant="body2" sx={{ color: '#1e293b', fontWeight: 500, mb: 1 }}>
+              <div className="space-y-2">
+                <div className="p-2 bg-slate-50 rounded">
+                  <div className="flex items-start gap-1">
+                    <Checkbox />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-slate-800 mb-1">
                         Followup with customer about Upgrade
-                      </Typography>
-                      <Stack direction="row" alignItems="center" spacing={1}>
-                        <NotificationsIcon sx={{ color: '#64748b', fontSize: 14 }} />
-                        <Typography variant="caption" sx={{ color: '#64748b' }}>
+                      </p>
+                      <div className="flex items-center gap-1">
+                        <Bell className="w-3.5 h-3.5 text-slate-500" />
+                        <p className="text-xs text-slate-500">
                           Set two factor authentication by google authenticator
-                        </Typography>
-                      </Stack>
-                      <Typography variant="caption" sx={{ color: '#64748b' }}>
+                        </p>
+                      </div>
+                      <p className="text-xs text-slate-500">
                         IN 4 DAYS
-                      </Typography>
-                    </Box>
-                  </Stack>
-                </Box>
+                      </p>
+                    </div>
+                  </div>
+                </div>
                 
-                <Box sx={{ p: 2, bgcolor: '#f8fafc', borderRadius: 1 }}>
-                  <Stack direction="row" alignItems="flex-start" spacing={1}>
-                    <Checkbox size="small" />
-                    <Box sx={{ flex: 1 }}>
-                      <Typography variant="body2" sx={{ color: '#1e293b', fontWeight: 500, mb: 1 }}>
+                <div className="p-2 bg-slate-50 rounded">
+                  <div className="flex items-start gap-1">
+                    <Checkbox />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-slate-800 mb-1">
                         Billing reminder
-                      </Typography>
-                      <Stack direction="row" alignItems="center" spacing={1}>
-                        <GroupsIcon sx={{ color: '#64748b', fontSize: 14 }} />
-                        <Typography variant="caption" sx={{ color: '#64748b' }}>
+                      </p>
+                      <div className="flex items-center gap-1">
+                        <Users className="w-3.5 h-3.5 text-slate-500" />
+                        <p className="text-xs text-slate-500">
                           Ticket Sharing between groups
-                        </Typography>
-                      </Stack>
-                      <Typography variant="caption" sx={{ color: '#64748b' }}>
+                        </p>
+                      </div>
+                      <p className="text-xs text-slate-500">
                         IN 6 DAYS
-                      </Typography>
-                    </Box>
-                  </Stack>
-                </Box>
-              </Stack>
-            </CardContent>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </Card>
-        </Box>
-      </Box>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 }

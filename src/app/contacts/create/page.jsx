@@ -1,8 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import ContactForm from '.././../../components/ContactForm'; // Adjust the import path as necessary
-import { Box, Alert } from '@mui/material';
+import ContactForm from '.././../../components/ContactForm';
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useState } from 'react';
 
 const CreateContactPage = () => {
@@ -16,7 +16,7 @@ const CreateContactPage = () => {
     });
     if (res.ok) {
       const created = await res.json();
-      setNotification({ message: 'Created successfully!', severity: 'success' });
+      setNotification({ message: 'Created successfully!', type: 'success' });
       // Redirect back to ticket creation with contactId and contactName
       setTimeout(() => {
         const params = new URLSearchParams(window.location.search);
@@ -30,17 +30,21 @@ const CreateContactPage = () => {
         }
       }, 1200);
     } else {
-      setNotification({ message: 'Failed to create.', severity: 'error' });
+      setNotification({ message: 'Failed to create.', type: 'destructive' });
     }
   };
 
   return (
-    <Box sx={{ p: 3 }}>
+    <div className="p-6">
       <ContactForm onSubmit={handleSubmit} />
       {notification && (
-        <Alert severity={notification.severity} sx={{ mt: 2 }}>{notification.message}</Alert>
+        <Alert variant={notification.type} className="mt-4">
+          <AlertDescription>
+            {notification.message}
+          </AlertDescription>
+        </Alert>
       )}
-    </Box>
+    </div>
   );
 };
 

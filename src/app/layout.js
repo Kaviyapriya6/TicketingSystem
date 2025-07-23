@@ -6,47 +6,7 @@ import Navbar from '../components/Navbar';
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
 import { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline, Box } from '@mui/material';
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#2563eb',
-    },
-    secondary: {
-      main: '#059669',
-    },
-    background: {
-      default: '#f9fafb',
-      paper: '#ffffff',
-    },
-  },
-  typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-    h5: {
-      fontWeight: 600,
-    },
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: 8,
-        },
-      },
-    },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          borderRadius: 12,
-        },
-      },
-    },
-  },
-});
-
-
+import { Loader2Icon } from 'lucide-react';
 
 function AppContent({ children }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -55,9 +15,8 @@ function AppContent({ children }) {
   const router = useRouter();
 
   // Routes that should not show sidebar/navbar
-  const publicRoutes = ['/', '/auth/login', '/auth/signup', '/unauthorized' , '/auth/forgot-password'];
+  const publicRoutes = ['/', '/auth/login', '/auth/signup', '/unauthorized', '/auth/forgot-password'];
   const isPublicRoute = publicRoutes.includes(pathname);
-
 
   // Combined redirect logic for unauthorized or unauthenticated users
   useEffect(() => {
@@ -72,23 +31,18 @@ function AppContent({ children }) {
   // Show loading state while checking authentication
   if (loading && !isPublicRoute) {
     return (
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh' 
-      }}>
-        <div>Loading...</div>
-      </Box>
+      <div className="flex justify-center items-center h-screen">
+        <Loader2Icon className="h-8 w-8 animate-spin text-slate-400" />
+      </div>
     );
   }
 
   // For public routes (landing, auth pages), show full-width layout
   if (isPublicRoute) {
     return (
-      <Box sx={{ minHeight: '100vh' }}>
+      <div className="min-h-screen">
         {children}
-      </Box>
+      </div>
     );
   }
 
@@ -98,7 +52,7 @@ function AppContent({ children }) {
 
   // For protected routes, show sidebar and navbar
   return (
-    <Box sx={{ display: 'flex', height: '100vh' }}>
+    <div className="flex min-h-screen bg-slate-50">
       {/* Sidebar */}
       <Sidebar 
         isCollapsed={sidebarCollapsed} 
@@ -106,39 +60,30 @@ function AppContent({ children }) {
       />
       
       {/* Main content area */}
-      <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Navbar */}
         <Navbar />
         
         {/* Page content */}
-        <Box
-          component="main"
-          sx={{
-            flexGrow: 1,
-            overflow: 'auto',
-            p: 3,
-            backgroundColor: 'background.default',
-          }}
-        >
-          {children}
-        </Box>
-      </Box>
-    </Box>
+        <main className="flex-1 p-6 overflow-x-hidden">
+          <div className="mx-auto max-w-7xl">
+            {children}
+          </div>
+        </main>
+      </div>
+    </div>
   );
 }
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <AuthProvider>
-            <AppContent>
-              {children}
-            </AppContent>
-          </AuthProvider>
-        </ThemeProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className="min-h-screen bg-background font-sans antialiased">
+        <AuthProvider>
+          <AppContent>
+            {children}
+          </AppContent>
+        </AuthProvider>
       </body>
     </html>
   );

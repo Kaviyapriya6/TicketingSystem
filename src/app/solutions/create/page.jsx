@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import EditorPage from '../../../components/SolutionForm'; // Your form component
-import { Box, Alert } from '@mui/material';
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useState } from 'react';
 
 const CreateSolutionPage = () => {
@@ -19,7 +19,7 @@ const CreateSolutionPage = () => {
   const [notification, setNotification] = useState({
     open: false,
     message: '',
-    severity: 'success',
+    type: 'default',
   });
 
   const addSolution = async (formData) => {
@@ -48,7 +48,7 @@ const CreateSolutionPage = () => {
       setNotification({
         open: true,
         message: 'Solution created successfully!',
-        severity: 'success',
+        type: 'default',
       });
 
       setTimeout(() => {
@@ -65,25 +65,25 @@ const CreateSolutionPage = () => {
       setNotification({
         open: true,
         message: error.message || 'Failed to create solution. Please try again.',
-        severity: 'error',
+        type: 'destructive',
       });
     }
   };
 
   return (
-    <Box sx={{ p: 3 }}>
+    <div className="p-6">
       <EditorPage onSubmit={handleSubmit} mode={mode} ticketId={ticketId} />
 
       {notification.open && (
         <Alert
-          severity={notification.severity}
+          variant={notification.type}
+          className="fixed top-4 right-4 max-w-md z-50"
           onClose={() => setNotification({ ...notification, open: false })}
-          sx={{ position: 'fixed', top: 16, right: 16, zIndex: 1000 }}
         >
-          {notification.message}
+          <AlertDescription>{notification.message}</AlertDescription>
         </Alert>
       )}
-    </Box>
+    </div>
   );
 };
 

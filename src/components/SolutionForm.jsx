@@ -1,62 +1,30 @@
 'use client'
 import React, { useState, useRef } from 'react';
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter, DialogHeader } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
 import {
-  Box,
-  TextField,
-  Button,
-  Paper,
-  Typography,
-  Divider,
-  IconButton,
-  Toolbar,
-  Select,
-  MenuItem,
-  FormControl,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Chip,
-  InputAdornment,
-  ButtonGroup,
-  Tooltip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Input,
-  Switch,
-  FormControlLabel,
-  Snackbar,
-  Alert
-} from '@mui/material';
-import {
-  AutoAwesome,
-  ExpandMore,
-  FormatBold,
-  FormatItalic,
-  FormatUnderlined,
-  FormatListBulleted,
-  FormatListNumbered,
-  FormatIndentDecrease,
-  FormatIndentIncrease,
-  Link,
-  Image,
-  VideoLibrary,
-  TableChart,
-  AttachFile,
-  Functions,
-  Code,
-  Fullscreen,
-  Add,
+  Sparkles,
+  Plus,
   Info,
-  Language,
-  FileCopy,
-  ExpandLess,
-  Delete,
-  Edit,
+  Globe,
+  Copy,
+  ChevronDown,
+  ChevronUp,
+  Trash2,
+  PencilLine,
   Save,
-  Visibility
-} from '@mui/icons-material';
+  Eye
+} from 'lucide-react';
 
 export default function CMSEditor({ onSubmit, initialData = {}, isEdit = false }) {
   const [title, setTitle] = useState(initialData.title || '');
@@ -363,461 +331,305 @@ For questions not covered here, please contact [support information].`;
     showNotification(`Template "${templateName}" loaded successfully`);
   };
 
-  const formatButtons = [
-    { icon: <FormatBold />, tooltip: 'Bold', action: () => formatText('bold') },
-    { icon: <FormatItalic />, tooltip: 'Italic', action: () => formatText('italic') },
-    { icon: <FormatUnderlined />, tooltip: 'Underline', action: () => formatText('underline') },
-  ];
-
-  const listButtons = [
-    { icon: <FormatListBulleted />, tooltip: 'Bullet List', action: () => formatText('bulletList') },
-    { icon: <FormatListNumbered />, tooltip: 'Numbered List', action: () => formatText('numberedList') },
-  ];
-
-  const indentButtons = [
-    { icon: <FormatIndentDecrease />, tooltip: 'Decrease Indent', action: () => showNotification('Indent decreased') },
-    { icon: <FormatIndentIncrease />, tooltip: 'Increase Indent', action: () => showNotification('Indent increased') },
-  ];
-
-  const mediaButtons = [
-    { icon: <Link />, tooltip: 'Insert Link', action: () => setLinkDialog(true) },
-    { icon: <Image />, tooltip: 'Insert Image', action: () => setImageDialog(true) },
-    { icon: <VideoLibrary />, tooltip: 'Insert Video', action: () => showNotification('Video insertion coming soon') },
-    { icon: <TableChart />, tooltip: 'Insert Table', action: insertTable },
-    { icon: <AttachFile />, tooltip: 'Attach File', action: () => showNotification('File attachment coming soon') },
-    { icon: <Functions />, tooltip: 'Insert Math', action: () => showNotification('Math insertion coming soon') },
-    { icon: <Code />, tooltip: 'Code Block', action: () => formatText('code') },
-    { icon: <Fullscreen />, tooltip: 'Fullscreen', action: () => showNotification('Fullscreen mode') },
-  ];
-
   return (
-    <Box sx={{ display: 'flex', height: '100vh', backgroundColor: '#f5f5f5' }}>
+    <div className="flex h-screen bg-slate-50">
       {/* Main Editor Area */}
-      <Box sx={{ flex: 1, p: 3 }}>
+      <div className="flex-1 p-6">
         {/* Top Action Bar */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant="h6" sx={{ mr: 2 }}>
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-semibold text-slate-900">
               {isEdit ? 'Edit Article' : 'Article Editor'}
-            </Typography>
+            </h1>
             {isPublished && (
-              <Chip 
-                icon={<Visibility />} 
-                label="Published" 
-                color="success" 
-                size="small" 
-              />
+              <Badge variant="success" className="flex items-center gap-1">
+                <Eye className="h-3 w-3" />
+                Published
+              </Badge>
             )}
-          </Box>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Button 
-              variant="outlined" 
-              color="inherit"
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
               onClick={handlePreview}
-              startIcon={<Visibility />}
             >
+              <Eye className="h-4 w-4 mr-2" />
               Preview
             </Button>
-            <Button 
-              variant="outlined" 
-              color="inherit"
+            <Button
+              variant="outline"
               onClick={handleSave}
-              startIcon={<Save />}
             >
+              <Save className="h-4 w-4 mr-2" />
               {isEdit ? 'Update' : 'Save'}
             </Button>
-            <Button 
-              variant="contained" 
-              color="primary"
+            <Button
+              variant="default"
               onClick={handlePublish}
               disabled={!title.trim() || !content.trim()}
             >
               {isEdit ? 'Update & Publish' : (isPublished ? 'Update' : 'Publish')}
             </Button>
-          </Box>
-        </Box>
+          </div>
+        </div>
 
         {/* Title Input */}
-        <TextField
-          fullWidth
+        <Input
           placeholder="Enter article title..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          sx={{
-            mb: 2,
-            '& .MuiOutlinedInput-root': {
-              fontSize: '1.5rem',
-              fontWeight: 500,
-              '& fieldset': {
-                borderColor: '#e0e0e0',
-              },
-            },
-          }}
+          className="mb-4 text-2xl font-medium"
         />
 
-        {/* Editor Toolbar */}
-        <Paper elevation={0} sx={{ border: '1px solid #e0e0e0', borderRadius: 1 }}>
-          <Toolbar sx={{ minHeight: '48px !important', px: 2, borderBottom: '1px solid #e0e0e0' }}>
-            <Button
-              startIcon={<AutoAwesome />}
-              size="small"
-              sx={{ mr: 2, textTransform: 'none' }}
-              onClick={() => showNotification('AI writing assistant coming soon')}
-            >
-              Write with AI
-            </Button>
-            
-            <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-            
-            <FormControl size="small" sx={{ minWidth: 80, mr: 1 }}>
-              <Select 
-                defaultValue="paragraph" 
-                displayEmpty
-                onChange={(e) => {
-                  if (e.target.value === 'heading1') formatText('heading1');
-                  if (e.target.value === 'heading2') formatText('heading2');
-                }}
-              >
-                <MenuItem value="paragraph">¶</MenuItem>
-                <MenuItem value="heading1">H1</MenuItem>
-                <MenuItem value="heading2">H2</MenuItem>
-              </Select>
-            </FormControl>
-            
-            <FormControl size="small" sx={{ minWidth: 120, mr: 2 }}>
-              <Select defaultValue="arial" displayEmpty>
-                <MenuItem value="arial">Arial</MenuItem>
-                <MenuItem value="times">Times</MenuItem>
-                <MenuItem value="courier">Courier</MenuItem>
-              </Select>
-            </FormControl>
-
-            <ButtonGroup size="small" sx={{ mr: 2 }}>
-              {formatButtons.map((button, index) => (
-                <Tooltip key={index} title={button.tooltip}>
-                  <IconButton size="small" onClick={button.action}>
-                    {button.icon}
-                  </IconButton>
-                </Tooltip>
-              ))}
-            </ButtonGroup>
-
-            <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-
-            <ButtonGroup size="small" sx={{ mr: 2 }}>
-              {listButtons.map((button, index) => (
-                <Tooltip key={index} title={button.tooltip}>
-                  <IconButton size="small" onClick={button.action}>
-                    {button.icon}
-                  </IconButton>
-                </Tooltip>
-              ))}
-            </ButtonGroup>
-
-            <ButtonGroup size="small" sx={{ mr: 2 }}>
-              {indentButtons.map((button, index) => (
-                <Tooltip key={index} title={button.tooltip}>
-                  <IconButton size="small" onClick={button.action}>
-                    {button.icon}
-                  </IconButton>
-                </Tooltip>
-              ))}
-            </ButtonGroup>
-
-            <Box sx={{ display: 'flex', gap: 0.5 }}>
-              {mediaButtons.map((button, index) => (
-                <Tooltip key={index} title={button.tooltip}>
-                  <IconButton size="small" onClick={button.action}>
-                    {button.icon}
-                  </IconButton>
-                </Tooltip>
-              ))}
-            </Box>
-          </Toolbar>
-
-          {/* Editor Content Area */}
-          <Box sx={{ p: 2, minHeight: 400 }}>
-            <TextField
-              fullWidth
-              multiline
-              rows={18}
-              placeholder="Start writing your article here..."
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              variant="outlined"
-              inputRef={contentRef}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  fontFamily: 'monospace',
-                  fontSize: '14px',
-                  '& fieldset': {
-                    border: 'none',
-                  },
-                },
-              }}
-            />
-          </Box>
-        </Paper>
+        {/* Editor */}
+        <RichTextEditor
+          ref={contentRef}
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="Start writing your article here..."
+        />
 
         {/* Article Stats */}
-        <Box sx={{ mt: 2, display: 'flex', gap: 2, color: '#666', fontSize: '0.875rem' }}>
+        <div className="mt-4 flex gap-4 text-sm text-slate-600">
           <span>Words: {content.split(/\s+/).filter(word => word.length > 0).length}</span>
           <span>Characters: {content.length}</span>
           <span>Reading time: ~{Math.ceil(content.split(/\s+/).filter(word => word.length > 0).length / 200)} min</span>
-        </Box>
-      </Box>
+        </div>
+      </div>
 
       {/* Right Sidebar */}
-      <Box sx={{ width: 350, backgroundColor: 'white', borderLeft: '1px solid #e0e0e0', p: 2 }}>
+      <div className="w-[350px] bg-white border-l border-slate-200 p-4">
         {/* Templates Section */}
-        <Accordion expanded={templatesExpanded} onChange={() => setTemplatesExpanded(!templatesExpanded)}>
-          <AccordionSummary expandIcon={<ExpandMore />}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+        <Accordion type="single" collapsible defaultValue="templates">
+          <AccordionItem value="templates">
+            <AccordionTrigger className="text-sm font-semibold">
               TEMPLATES ({templates.length})
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails sx={{ pt: 0 }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              {templates.map((template, index) => (
-                <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <FileCopy sx={{ fontSize: 16, color: '#666' }} />
-                  <Typography 
-                    variant="body2" 
-                    sx={{ 
-                      color: '#1976d2', 
-                      cursor: 'pointer',
-                      '&:hover': { textDecoration: 'underline' }
-                    }}
-                    onClick={() => loadTemplate(template)}
-                  >
-                    {template}
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-          </AccordionDetails>
-        </Accordion>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="flex flex-col gap-2">
+                {templates.map((template, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <Copy className="h-4 w-4 text-slate-500" />
+                    <button
+                      className="text-sm text-blue-600 hover:underline"
+                      onClick={() => loadTemplate(template)}
+                    >
+                      {template}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
 
-        {/* Article Properties Section */}
-        <Accordion expanded={propertiesExpanded} onChange={() => setPropertiesExpanded(!propertiesExpanded)}>
-          <AccordionSummary expandIcon={<ExpandMore />}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+          {/* Article Properties Section */}
+          <AccordionItem value="properties">
+            <AccordionTrigger className="text-sm font-semibold">
               ARTICLE PROPERTIES
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails sx={{ pt: 0 }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Box>
-                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-                  Select hierarchy *
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <FormControl fullWidth size="small">
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="space-y-4">
+                <div>
+                  <Label className="mb-1.5">Select hierarchy *</Label>
+                  <div className="flex items-center gap-2">
                     <Select
                       value={selectedHierarchy}
-                      onChange={(e) => setSelectedHierarchy(e.target.value)}
-                      placeholder="Select hierarchy"
-                      displayEmpty
+                      onValueChange={setSelectedHierarchy}
                     >
-                      <MenuItem value="">
-                        <em>Select hierarchy</em>
-                      </MenuItem>
-                      <MenuItem value="HOW TO'S">HOW TO'S</MenuItem>
-                      <MenuItem value="FAQ">FAQ</MenuItem>
-                      <MenuItem value="Troubleshooting">Troubleshooting</MenuItem>
-                      <MenuItem value="User Guides">User Guides</MenuItem>
-                      <MenuItem value="API Documentation">API Documentation</MenuItem>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select hierarchy" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="HOW TO'S">HOW TO'S</SelectItem>
+                        <SelectItem value="FAQ">FAQ</SelectItem>
+                        <SelectItem value="Troubleshooting">Troubleshooting</SelectItem>
+                        <SelectItem value="User Guides">User Guides</SelectItem>
+                        <SelectItem value="API Documentation">API Documentation</SelectItem>
+                      </SelectContent>
                     </Select>
-                  </FormControl>
-                  <Button size="small" startIcon={<Add />} sx={{ textTransform: 'none', whiteSpace: 'nowrap' }}>
-                    New folder
-                  </Button>
-                </Box>
-              </Box>
+                    <Button variant="outline" size="sm">
+                      <Plus className="h-4 w-4 mr-1" />
+                      New folder
+                    </Button>
+                  </div>
+                </div>
 
-              <Box>
-                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-                  Tags
-                </Typography>
-                <TextField
-                  fullWidth
-                  size="small"
-                  placeholder="Add tags and press Enter"
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  onKeyPress={handleTagKeyPress}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <Button size="small" onClick={handleTagAdd}>Add</Button>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1 }}>
-                  {tags.map((tag, index) => (
-                    <Chip
-                      key={index}
-                      label={tag}
-                      size="small"
-                      onDelete={() => handleTagDelete(tag)}
-                      color="primary"
-                      variant="outlined"
+                <div>
+                  <Label className="mb-1.5">Tags</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      placeholder="Add tags and press Enter"
+                      value={tagInput}
+                      onChange={(e) => setTagInput(e.target.value)}
+                      onKeyPress={handleTagKeyPress}
                     />
-                  ))}
-                </Box>
-              </Box>
+                    <Button variant="outline" size="sm" onClick={handleTagAdd}>
+                      Add
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {tags.map((tag, index) => (
+                      <Badge
+                        key={index}
+                        variant="outline"
+                        className="flex items-center gap-1"
+                      >
+                        {tag}
+                        <button
+                          onClick={() => handleTagDelete(tag)}
+                          className="ml-1 hover:text-red-500"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
 
-              <Box>
-                <FormControlLabel
-                  control={<Switch checked={isPublished} onChange={(e) => setIsPublished(e.target.checked)} />}
-                  label="Published"
-                />
-              </Box>
-            </Box>
-          </AccordionDetails>
-        </Accordion>
+                <div className="flex items-center justify-between">
+                  <Label>Published</Label>
+                  <Switch
+                    checked={isPublished}
+                    onCheckedChange={setIsPublished}
+                  />
+                </div>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
 
-        {/* SEO Section */}
-        <Accordion expanded={seoExpanded} onChange={() => setSeoExpanded(!seoExpanded)}>
-          <AccordionSummary expandIcon={<ExpandMore />}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+          {/* SEO Section */}
+          <AccordionItem value="seo">
+            <AccordionTrigger className="text-sm font-semibold">
               SEARCH ENGINE OPTIMISATION
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails sx={{ pt: 0 }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Box>
-                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-                  Title for search engine
-                </Typography>
-                <TextField
-                  fullWidth
-                  size="small"
-                  placeholder="Type article title for SEO"
-                  value={seoTitle}
-                  onChange={(e) => setSeoTitle(e.target.value)}
-                  helperText={`${seoTitle.length}/60 characters`}
-                />
-              </Box>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="space-y-4">
+                <div>
+                  <Label className="mb-1.5">Title for search engine</Label>
+                  <Input
+                    placeholder="Type article title for SEO"
+                    value={seoTitle}
+                    onChange={(e) => setSeoTitle(e.target.value)}
+                  />
+                  <p className="mt-1 text-sm text-slate-500">
+                    {seoTitle.length}/60 characters
+                  </p>
+                </div>
 
-              <Box>
-                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-                  Description for search engine
-                </Typography>
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={3}
-                  size="small"
-                  placeholder="Type article description for SEO"
-                  value={seoDescription}
-                  onChange={(e) => setSeoDescription(e.target.value)}
-                  helperText={`${seoDescription.length}/160 characters`}
-                />
-              </Box>
-            </Box>
-          </AccordionDetails>
+                <div>
+                  <Label className="mb-1.5">Description for search engine</Label>
+                  <textarea
+                    className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="Type article description for SEO"
+                    value={seoDescription}
+                    onChange={(e) => setSeoDescription(e.target.value)}
+                  />
+                  <p className="mt-1 text-sm text-slate-500">
+                    {seoDescription.length}/160 characters
+                  </p>
+                </div>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
         </Accordion>
 
         {/* Bottom Icons */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 3, pt: 2, borderTop: '1px solid #e0e0e0' }}>
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <IconButton size="small" onClick={() => showNotification('Article info')}>
-              <Info />
-            </IconButton>
-            <IconButton size="small" onClick={() => showNotification('Language settings')}>
-              <Language />
-            </IconButton>
-          </Box>
-          <Box sx={{ position: 'relative' }}>
-            <Box sx={{ 
-              width: 24, 
-              height: 24, 
-              borderRadius: '50%', 
-              backgroundColor: '#ff5722',
-              color: 'white',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '12px',
-              fontWeight: 'bold'
-            }}>
+        <div className="flex justify-between items-center mt-6 pt-4 border-t border-slate-200">
+          <div className="flex gap-4">
+            <button className="text-slate-600 hover:text-slate-900">
+              <Info className="h-5 w-5" />
+            </button>
+            <button className="text-slate-600 hover:text-slate-900">
+              <Globe className="h-5 w-5" />
+            </button>
+          </div>
+          <div className="relative">
+            <div className="w-6 h-6 rounded-full bg-orange-500 text-white flex items-center justify-center text-xs font-semibold">
               {tags.length || 0}
-            </Box>
-          </Box>
-        </Box>
-      </Box>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Link Dialog */}
-      <Dialog open={linkDialog} onClose={() => setLinkDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Insert Link</DialogTitle>
+      <Dialog open={linkDialog} onOpenChange={setLinkDialog}>
         <DialogContent>
-          <TextField
-            fullWidth
-            label="Link Text"
-            value={linkText}
-            onChange={(e) => setLinkText(e.target.value)}
-            sx={{ mb: 2, mt: 1 }}
-          />
-          <TextField
-            fullWidth
-            label="URL"
-            value={linkUrl}
-            onChange={(e) => setLinkUrl(e.target.value)}
-            placeholder="https://example.com"
-          />
+          <DialogHeader>
+            <DialogTitle>Insert Link</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Link Text</Label>
+              <Input
+                value={linkText}
+                onChange={(e) => setLinkText(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>URL</Label>
+              <Input
+                value={linkUrl}
+                onChange={(e) => setLinkUrl(e.target.value)}
+                placeholder="https://example.com"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setLinkDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={insertLink} disabled={!linkUrl || !linkText}>
+              Insert Link
+            </Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setLinkDialog(false)}>Cancel</Button>
-          <Button onClick={insertLink} variant="contained" disabled={!linkUrl || !linkText}>
-            Insert Link
-          </Button>
-        </DialogActions>
       </Dialog>
 
       {/* Image Dialog */}
-      <Dialog open={imageDialog} onClose={() => setImageDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Insert Image</DialogTitle>
+      <Dialog open={imageDialog} onOpenChange={setImageDialog}>
         <DialogContent>
-          <TextField
-            fullWidth
-            label="Image URL"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-            sx={{ mb: 2, mt: 1 }}
-            placeholder="https://example.com/image.jpg"
-          />
-          <TextField
-            fullWidth
-            label="Alt Text"
-            value={imageAlt}
-            onChange={(e) => setImageAlt(e.target.value)}
-            placeholder="Describe the image"
-          />
+          <DialogHeader>
+            <DialogTitle>Insert Image</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Image URL</Label>
+              <Input
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                placeholder="https://example.com/image.jpg"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Alt Text</Label>
+              <Input
+                value={imageAlt}
+                onChange={(e) => setImageAlt(e.target.value)}
+                placeholder="Describe the image"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setImageDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={insertImage} disabled={!imageUrl}>
+              Insert Image
+            </Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setImageDialog(false)}>Cancel</Button>
-          <Button onClick={insertImage} variant="contained" disabled={!imageUrl}>
-            Insert Image
-          </Button>
-        </DialogActions>
       </Dialog>
 
-      {/* Notification Snackbar */}
-      <Snackbar
-        open={notification.open}
-        autoHideDuration={3000}
-        onClose={() => setNotification({ ...notification, open: false })}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-      >
-        <Alert 
-          severity={notification.type} 
+      {/* Notification */}
+      {notification.open && (
+        <Alert
+          variant={notification.type === 'error' ? 'destructive' : 'default'}
+          className="fixed bottom-4 right-4 max-w-md"
           onClose={() => setNotification({ ...notification, open: false })}
         >
-          {notification.message}
+          <AlertDescription>{notification.message}</AlertDescription>
         </Alert>
-      </Snackbar>
-    </Box>
+      )}
+    </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import AddCompanyForm from '../../../components/CompanyForm';
-import { Box, Alert } from '@mui/material';
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useState } from 'react';
 
 const CreateCompanyPage = () => {
@@ -19,7 +19,7 @@ const CreateCompanyPage = () => {
   const [notification, setNotification] = useState({
     open: false,
     message: '',
-    severity: 'success'
+    type: 'default'
   });
 
   const addCompany = async (formData) => {
@@ -49,7 +49,7 @@ const CreateCompanyPage = () => {
       setNotification({
         open: true,
         message: 'Company created successfully!',
-        severity: 'success',
+        type: 'default',
       });
 
       setTimeout(() => {
@@ -70,25 +70,25 @@ const CreateCompanyPage = () => {
       setNotification({
         open: true,
         message: error.message || 'Failed to create company. Please try again.',
-        severity: 'error',
+        type: 'destructive',
       });
     }
   };
 
   return (
-    <Box sx={{ p: 3 }}>
+    <div className="p-6">
       <AddCompanyForm onSubmit={handleSubmit} />
 
       {notification.open && (
         <Alert
-          severity={notification.severity}
+          variant={notification.type}
+          className="fixed top-4 right-4 max-w-md z-50"
           onClose={() => setNotification({ ...notification, open: false })}
-          sx={{ position: 'fixed', top: 16, right: 16, zIndex: 1000 }}
         >
-          {notification.message}
+          <AlertDescription>{notification.message}</AlertDescription>
         </Alert>
       )}
-    </Box>
+    </div>
   );
 };
 

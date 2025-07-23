@@ -1,43 +1,42 @@
 'use client';
 
+import { Button } from './ui/button';
+import { Card } from './ui/card';
 import {
-  Box, Button, Typography, Paper, Grid, Chip, Stack,
-  Dialog, DialogTitle, DialogContent, DialogActions
-} from '@mui/material';
-import {
-  Edit as EditIcon,
-  Close as CloseIcon,
-  Restore as ReopenIcon,
-  Print as PrintIcon,
-  Download as DownloadIcon,
-  Email as EmailIcon,
-  Phone as PhoneIcon,
-  Person as PersonIcon,
-  Assignment as AssignmentIcon,
-  CloudDownload as CloudDownloadIcon
-} from '@mui/icons-material';
+  PencilIcon,
+  XIcon,
+  RefreshCwIcon,
+  PrinterIcon,
+  DownloadIcon,
+  MailIcon,
+  PhoneIcon,
+  UserIcon,
+  ClipboardListIcon,
+  CloudIcon
+} from 'lucide-react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 export default function TicketView({ ticketData }) {
   const router = useRouter();
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Open': return 'info';
-      case 'In Progress': return 'warning';
-      case 'Resolved': return 'success';
-      case 'Closed': return 'default';
-      default: return 'default';
+      case 'Open': return 'bg-blue-100 text-blue-800';
+      case 'In Progress': return 'bg-yellow-100 text-yellow-800';
+      case 'Resolved': return 'bg-green-100 text-green-800';
+      case 'Closed': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case 'High': return 'error';
-      case 'Medium': return 'warning';
-      case 'Low': return 'success';
-      default: return 'default';
+      case 'High': return 'bg-red-100 text-red-800';
+      case 'Medium': return 'bg-yellow-100 text-yellow-800';
+      case 'Low': return 'bg-green-100 text-green-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -106,182 +105,182 @@ export default function TicketView({ ticketData }) {
 
   if (!ticketData) {
     return (
-      <Box p={4} textAlign="center">
-        <Typography variant="h6" color="error">
+      <div className="p-8 text-center">
+        <h2 className="text-xl font-semibold text-red-600">
           Ticket data is missing.
-        </Typography>
-      </Box>
+        </h2>
+      </div>
     );
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#f8fafc', p: 3 }}>
-      <Box sx={{ maxWidth: 800, mx: 'auto' }}>
-
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <Box sx={{
-          mb: 4, p: 3, bgcolor: 'white', borderRadius: 2,
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)', border: '1px solid #e2e8f0'
-        }}>
-          <Stack direction="row" alignItems="center" justifyContent="space-between">
-            <Stack direction="row" alignItems="center" spacing={2}>
-              <Box sx={{ p: 1.5, bgcolor: 'primary.main', borderRadius: 2, color: 'white' }}>
-                <AssignmentIcon sx={{ fontSize: 28 }} />
-              </Box>
-              <Box>
-                <Stack direction="row" alignItems="center" spacing={2}>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b' }}>
+        <Card className="mb-8 p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-blue-600 rounded-lg text-white">
+                <ClipboardListIcon className="h-7 w-7" />
+              </div>
+              <div>
+                <div className="flex items-center space-x-4">
+                  <h1 className="text-3xl font-bold text-gray-900">
                     {ticketData.ticketId}
-                  </Typography>
-                  <Chip
-                    label={ticketData.status}
-                    color={getStatusColor(ticketData.status)}
-                    size="small"
-                  />
-                </Stack>
-                <Typography variant="body2" sx={{ color: '#64748b', mt: 0.5 }}>
+                  </h1>
+                  <span className={cn(
+                    "px-2 py-1 rounded-full text-xs font-medium",
+                    getStatusColor(ticketData.status)
+                  )}>
+                    {ticketData.status}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-500 mt-1">
                   Created {formatDate(ticketData.createdAt)} • Last updated {formatDate(ticketData.updatedAt)}
-                </Typography>
-              </Box>
-            </Stack>
+                </p>
+              </div>
+            </div>
 
-            <Stack direction="row" spacing={2}>
-              <Button variant="outlined" startIcon={<PrintIcon />} onClick={handlePrint}>
+            <div className="flex space-x-4">
+              <Button variant="outline" onClick={handlePrint}>
+                <PrinterIcon className="h-4 w-4 mr-2" />
                 Print
               </Button>
-              <Button variant="outlined" startIcon={<EditIcon />} onClick={handleEdit}>
+              <Button variant="outline" onClick={handleEdit}>
+                <PencilIcon className="h-4 w-4 mr-2" />
                 Edit
               </Button>
               <Button
-                variant="outlined"
-                color="error"
-                startIcon={<CloseIcon />}
+                variant="outline"
                 onClick={handleClose}
-                sx={{
-                  '&:hover': {
-                    bgcolor: 'error.light',
-                    color: 'white'
-                  }
-                }}
+                className="text-red-600 hover:bg-red-50"
               >
+                <XIcon className="h-4 w-4 mr-2" />
                 Close
               </Button>
-            </Stack>
-          </Stack>
-        </Box>
+            </div>
+          </div>
+        </Card>
 
         {/* Ticket Details */}
-        <Paper sx={{ p: 4, borderRadius: 3, mb: 4 }}>
-          <Typography variant="h6" fontWeight={600} mb={3}>Ticket Details</Typography>
-          <Grid container spacing={3}>
-            <Grid item xs={12} sm={4}>
-              <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>Status</Typography>
-              <Chip label={ticketData.status} color={getStatusColor(ticketData.status)} />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>Priority</Typography>
-              <Chip label={ticketData.priority} color={getPriorityColor(ticketData.priority)} />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>Issue Type</Typography>
-              <Chip label={ticketData.issueType} variant="outlined" />
-            </Grid>
-          </Grid>
-        </Paper>
+        <Card className="p-8 mb-8">
+          <h2 className="text-xl font-semibold mb-6">Ticket Details</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div>
+              <p className="text-sm text-gray-500 mb-2">Status</p>
+              <span className={cn(
+                "px-2 py-1 rounded-full text-xs font-medium",
+                getStatusColor(ticketData.status)
+              )}>
+                {ticketData.status}
+              </span>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500 mb-2">Priority</p>
+              <span className={cn(
+                "px-2 py-1 rounded-full text-xs font-medium",
+                getPriorityColor(ticketData.priority)
+              )}>
+                {ticketData.priority}
+              </span>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500 mb-2">Issue Type</p>
+              <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                {ticketData.issueType}
+              </span>
+            </div>
+          </div>
+        </Card>
 
         {/* Customer Information */}
-        <Paper sx={{ p: 4, borderRadius: 3, mb: 4 }}>
-          <Stack direction="row" alignItems="center" spacing={2} mb={3}>
-            <PersonIcon color="primary" />
-            <Typography variant="h6" fontWeight={600}>Customer Information</Typography>
-          </Stack>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={4}>
-              <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>Customer ID</Typography>
-              <Typography fontWeight={500}>{ticketData.customerId}</Typography>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>Email</Typography>
-              <Stack direction="row" alignItems="center" spacing={1}>
-                <EmailIcon fontSize="small" color="action" />
-                <Typography fontWeight={500}>{ticketData.email}</Typography>
-              </Stack>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>Phone</Typography>
-              <Stack direction="row" alignItems="center" spacing={1}>
-                <PhoneIcon fontSize="small" color="action" />
-                <Typography fontWeight={500}>{ticketData.phone}</Typography>
-              </Stack>
-            </Grid>
-          </Grid>
-        </Paper>
+        <Card className="p-8 mb-8">
+          <div className="flex items-center space-x-2 mb-6">
+            <UserIcon className="h-5 w-5 text-blue-600" />
+            <h2 className="text-xl font-semibold">Customer Information</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <p className="text-sm text-gray-500 mb-2">Customer ID</p>
+              <p className="font-medium">{ticketData.customerId}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500 mb-2">Email</p>
+              <div className="flex items-center space-x-2">
+                <MailIcon className="h-4 w-4 text-gray-400" />
+                <p className="font-medium">{ticketData.email}</p>
+              </div>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500 mb-2">Phone</p>
+              <div className="flex items-center space-x-2">
+                <PhoneIcon className="h-4 w-4 text-gray-400" />
+                <p className="font-medium">{ticketData.phone}</p>
+              </div>
+            </div>
+          </div>
+        </Card>
 
         {/* Issue Description */}
-        <Paper sx={{ p: 4, borderRadius: 3, mb: 4 }}>
-          <Stack direction="row" alignItems="center" spacing={2} mb={3}>
-            <AssignmentIcon color="primary" />
-            <Typography variant="h6" fontWeight={600}>Issue Description</Typography>
-          </Stack>
-          <Box mb={3}>
-            <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>Subject</Typography>
-            <Typography variant="h6" fontWeight={500} sx={{ color: '#1e293b' }}>
+        <Card className="p-8 mb-8">
+          <div className="flex items-center space-x-2 mb-6">
+            <ClipboardListIcon className="h-5 w-5 text-blue-600" />
+            <h2 className="text-xl font-semibold">Issue Description</h2>
+          </div>
+          <div className="mb-6">
+            <p className="text-sm text-gray-500 mb-2">Subject</p>
+            <h3 className="text-xl font-medium text-gray-900">
               {ticketData.subject}
-            </Typography>
-          </Box>
-          <Box>
-            <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>Description</Typography>
-            <Typography sx={{ color: '#374151', lineHeight: 1.6 }}>
+            </h3>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500 mb-2">Description</p>
+            <p className="text-gray-700 leading-relaxed">
               {ticketData.description}
-            </Typography>
-          </Box>
-        </Paper>
+            </p>
+          </div>
+        </Card>
 
         {/* Associated Emails */}
         {Array.isArray(ticketData.emails) && ticketData.emails.length > 0 && (
-          <Paper sx={{ p: 4, borderRadius: 3, mb: 4 }}>
-            <Typography variant="h6" fontWeight={600} mb={3}>Associated Emails</Typography>
-            <Box>
+          <Card className="p-8 mb-8">
+            <h2 className="text-xl font-semibold mb-6">Associated Emails</h2>
+            <div className="space-y-4">
               {ticketData.emails.map((email) => (
-                <Paper key={email._id} sx={{ p: 2, mb: 2, bgcolor: '#f3f4f6' }}>
-                  <Typography variant="subtitle1" fontWeight={500}>{email.subject}</Typography>
-                  <Typography variant="body2" color="text.secondary">From: {email.from}</Typography>
-                  <Typography variant="body2" color="text.secondary">To: {email.to}</Typography>
-                  <Typography variant="body2" color="text.secondary">Date: {new Date(email.createdAt).toLocaleString()}</Typography>
-                  <Typography variant="body2" sx={{ mt: 1 }}>{email.description}</Typography>
-                </Paper>
+                <div key={email._id} className="p-4 bg-gray-50 rounded-lg">
+                  <h3 className="font-medium">{email.subject}</h3>
+                  <p className="text-sm text-gray-500">From: {email.from}</p>
+                  <p className="text-sm text-gray-500">To: {email.to}</p>
+                  <p className="text-sm text-gray-500">Date: {new Date(email.createdAt).toLocaleString()}</p>
+                  <p className="mt-2 text-gray-700">{email.description}</p>
+                </div>
               ))}
-            </Box>
-          </Paper>
+            </div>
+          </Card>
         )}
 
         {/* Attachments */}
         {ticketData.fileName && (
-          <Paper sx={{ p: 4, borderRadius: 3, mb: 4 }}>
-            <Typography variant="h6" fontWeight={600} mb={3}>Attachments</Typography>
-            <Box sx={{ 
-              p: 3, 
-              bgcolor: '#f8fafc', 
-              borderRadius: 2,
-              border: '1px solid #e2e8f0'
-            }}>
-              <Stack direction="row" justifyContent="space-between" alignItems="center">
-                <Stack direction="row" alignItems="center" spacing={2}>
-                  <CloudDownloadIcon color="primary" />
-                  <Typography fontWeight={500}>{ticketData.fileName}</Typography>
-                </Stack>
+          <Card className="p-8 mb-8">
+            <h2 className="text-xl font-semibold mb-6">Attachments</h2>
+            <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center space-x-4">
+                  <CloudIcon className="h-5 w-5 text-blue-600" />
+                  <p className="font-medium">{ticketData.fileName}</p>
+                </div>
                 <Button
-                  variant="outlined"
-                  startIcon={<DownloadIcon />}
+                  variant="outline"
                   onClick={handleDownload}
                 >
+                  <DownloadIcon className="h-4 w-4 mr-2" />
                   Download
                 </Button>
-              </Stack>
-            </Box>
-          </Paper>
+              </div>
+            </div>
+          </Card>
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }

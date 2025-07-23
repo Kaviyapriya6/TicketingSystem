@@ -1,8 +1,9 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import SupportTicketForm from '../../../components/EmailForm';
-import { Box, Alert } from '@mui/material';
+import EmailForm from '../../../components/EmailForm';
+import { ToastProvider, ToastViewport, Toast, ToastDescription, ToastClose } from "@/components/ui/toast";
+import { AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { useState } from 'react';
 
 const CreateEmailPage = () => {
@@ -10,7 +11,7 @@ const CreateEmailPage = () => {
   const [notification, setNotification] = useState({
     open: false,
     message: '',
-    severity: 'success'
+    type: 'default'
   });
 
   const addEmail = async (formData) => {
@@ -36,36 +37,51 @@ const CreateEmailPage = () => {
       await addEmail(formData);
       setNotification({
         open: true,
-        message: 'email created successfully!',
-        severity: 'success',
+        message: 'Email created successfully!',
+        type: 'default',
       });
 
       setTimeout(() => {
-        router.push('/email');
+        router.push('/Email');
       }, 1500);
     } catch (error) {
       setNotification({
         open: true,
         message: error.message || 'Failed to create email. Please try again.',
-        severity: 'error',
+        type: 'destructive',
       });
     }
   };
 
   return (
-    <Box sx={{ p: 3 }}>
-      <SupportTicketForm onSubmit={handleSubmit} />
+    <ToastProvider>
+      <div className="p-6">
+        <EmailForm onSubmit={handleSubmit} />
 
-      {notification.open && (
-        <Alert
-          severity={notification.severity}
-          onClose={() => setNotification({ ...notification, open: false })}
-          sx={{ position: 'fixed', top: 16, right: 16, zIndex: 1000 }}
-        >
-          {notification.message}
-        </Alert>
-      )}
-    </Box>
+        {/* Toast Notifications */}
+        <ToastViewport />
+        {notification.open && (
+          <Toast
+            variant={notification.type}
+            onOpenChange={(open) => {
+              if (!open) setNotification({ ...notification, open: false });
+            }}
+          >
+            <div className="flex">
+              {notification.type === 'default' ? (
+                <CheckCircle2 className="h-4 w-4 text-green-600" />
+              ) : (
+                <AlertTriangle className="h-4 w-4 text-red-600" />
+              )}
+              <ToastDescription className="ml-2">
+                {notification.message}
+              </ToastDescription>
+            </div>
+            <ToastClose />
+          </Toast>
+        )}
+      </div>
+    </ToastProvider>
   );
 };
 

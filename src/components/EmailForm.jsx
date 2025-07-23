@@ -1,55 +1,30 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  Button,
-  Typography,
-  Link,
-  Checkbox,
-  FormControlLabel,
-  Paper,
-  Chip,
-  IconButton,
-  Toolbar,
-  Divider,
-  Collapse,
-  Grid,
-  Alert,
-  CircularProgress,
-  Snackbar,
-  FormHelperText
-} from '@mui/material';
-import {
-  FormatBold,
-  FormatItalic,
-  FormatUnderlined,
-  FormatAlignLeft,
-  FormatAlignCenter,
-  FormatAlignRight,
-  FormatAlignJustify,
-  FormatListBulleted,
-  FormatListNumbered,
-  Link as LinkIcon,
-  Code,
-  Image,
-  FormatQuote,
-  AttachFile,
-  InsertPhoto,
-  TableChart,
-  Close,
-  Add,
-  Send,
-  Cancel,
-  Warning,
-  CheckCircle
-} from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
+import { ToastProvider, ToastViewport, Toast, ToastTitle, ToastDescription, ToastClose } from "@/components/ui/toast";
+import {
+  Plus,
+  X,
+  Send,
+  XCircle,
+  AlertTriangle,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  Link2
+} from 'lucide-react';
 
-const SupportTicketForm = ({ onSubmit }) => {
+const EmailForm = ({ onSubmit }) => {
   const router = useRouter();
   const [formData, setFormData] = useState({
     from: 'ihub (support@smsgroup-support.freshdesk.com)',
@@ -77,7 +52,7 @@ const SupportTicketForm = ({ onSubmit }) => {
   const [notification, setNotification] = useState({
     open: false,
     message: '',
-    severity: 'success'
+    type: 'default'
   });
   const [validationErrors, setValidationErrors] = useState({});
   const [touched, setTouched] = useState({});
@@ -191,14 +166,21 @@ const SupportTicketForm = ({ onSubmit }) => {
     });
   };
 
+  const handleSelectChange = (field) => (value) => {
+    setFormData({
+      ...formData,
+      [field]: value
+    });
+  };
+
   const handleBlur = (field) => () => {
     setTouched(prev => ({ ...prev, [field]: true }));
   };
 
-  const handleCheckboxChange = (event) => {
+  const handleCheckboxChange = (checked) => {
     setFormData({
       ...formData,
-      sendAnother: event.target.checked
+      sendAnother: checked
     });
   };
 
@@ -208,7 +190,7 @@ const SupportTicketForm = ({ onSubmit }) => {
         setNotification({
           open: true,
           message: 'Please enter a valid email address',
-          severity: 'error'
+          type: 'error'
         });
         return;
       }
@@ -225,7 +207,7 @@ const SupportTicketForm = ({ onSubmit }) => {
         setNotification({
           open: true,
           message: 'Email already added to CC',
-          severity: 'warning'
+          type: 'warning'
         });
       }
     }
@@ -237,7 +219,7 @@ const SupportTicketForm = ({ onSubmit }) => {
         setNotification({
           open: true,
           message: 'Please enter a valid email address',
-          severity: 'error'
+          type: 'error'
         });
         return;
       }
@@ -254,7 +236,7 @@ const SupportTicketForm = ({ onSubmit }) => {
         setNotification({
           open: true,
           message: 'Email already added to BCC',
-          severity: 'warning'
+          type: 'warning'
         });
       }
     }
@@ -290,7 +272,7 @@ const SupportTicketForm = ({ onSubmit }) => {
       setNotification({
         open: true,
         message: 'Please fix the validation errors before submitting',
-        severity: 'error'
+        type: 'destructive'
       });
       return;
     }
@@ -316,7 +298,7 @@ const SupportTicketForm = ({ onSubmit }) => {
       // Check if response is ok first
       if (!response.ok) {
         // Try to get error message from response
-        let errorMessage = 'Failed to submit support ticket.';
+        let errorMessage = 'Failed to send email.';
         try {
           const errorData = await response.json();
           errorMessage = errorData.error || errorMessage;
@@ -344,22 +326,22 @@ const SupportTicketForm = ({ onSubmit }) => {
 
       setNotification({
         open: true,
-        message: 'Support ticket submitted successfully!',
-        severity: 'success'
+        message: 'Email sent successfully!',
+        type: 'default'
       });
 
       if (!formData.sendAnother) {
         handleReset();
-        // Navigate to ticket dashboard after successful creation
-        router.push('/tickets');
+        // Navigate to email dashboard after successful creation
+        router.push('/Email/Create');
         return;
       }
 
     } catch (error) {
       setNotification({
         open: true,
-        message: error.message || 'Failed to submit support ticket. Please try again.',
-        severity: 'error'
+        message: error.message || 'Failed to send email. Please try again.',
+        type: 'destructive'
       });
     } finally {
       setIsSubmitting(false);
@@ -411,561 +393,429 @@ const SupportTicketForm = ({ onSubmit }) => {
   const hasValidationErrors = Object.keys(validationErrors).some(key => validationErrors[key]);
 
   return (
-    <Box sx={{ maxWidth: 900, mx: 'auto', p: 3 }}>
-      <Paper elevation={2} sx={{ p: 4 }}>
-        <Typography variant="h4" gutterBottom sx={{ mb: 3, fontWeight: 600 }}>
-          Create Support Ticket
-        </Typography>
+    <ToastProvider>
+      <div className="max-w-[900px] mx-auto p-6">
+        <Card className="p-6">
+          <h1 className="text-2xl font-semibold text-slate-900 mb-6">
+            Create Email
+          </h1>
 
-        {/* Header Info */}
-        <Alert severity="info" sx={{ mb: 3 }}>
-          When you hit send, the contact will receive an email and a ticket will be associated with them.{' '}
-          <Link href="#" color="primary" underline="hover">
-            Learn more
-          </Link>
-        </Alert>
-
-        {/* Validation Summary */}
-        {hasValidationErrors && (
-          <Alert severity="error" sx={{ mb: 3 }} icon={<Warning />}>
-            <Typography variant="body2" sx={{ fontWeight: 600 }}>
-              Please fix the following errors before submitting:
-            </Typography>
-            <ul style={{ margin: '8px 0', paddingLeft: '20px' }}>
-              {Object.entries(validationErrors).map(([field, error]) => 
-                error && (
-                  <li key={field} style={{ fontSize: '14px', marginBottom: '4px' }}>
-                    <strong>{field.charAt(0).toUpperCase() + field.slice(1)}:</strong> {error}
-                  </li>
-                )
-              )}
-            </ul>
+          {/* Header Info */}
+          <Alert variant="info" className="mb-6">
+            <AlertDescription>
+              When you hit send, the contact will receive an email and it will be associated with them.{' '}
+              <a href="#" className="text-blue-600 hover:underline">
+                Learn more
+              </a>
+            </AlertDescription>
           </Alert>
-        )}
 
-        <form onSubmit={handleSubmit}>
-          {/* From Field */}
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
-              From
-            </Typography>
-            <FormControl fullWidth size="small">
+          {/* Validation Summary */}
+          {hasValidationErrors && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                <p className="font-semibold">
+                  Please fix the following errors before submitting:
+                </p>
+                <ul className="mt-2 ml-5 list-disc">
+                  {Object.entries(validationErrors).map(([field, error]) => 
+                    error && (
+                      <li key={field} className="text-sm mb-1">
+                        <strong>{field.charAt(0).toUpperCase() + field.slice(1)}:</strong> {error}
+                      </li>
+                    )
+                  )}
+                </ul>
+              </AlertDescription>
+            </Alert>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            {/* From Field */}
+            <div className="mb-6">
+              <Label>From</Label>
               <Select
                 value={formData.from}
-                onChange={handleChange('from')}
+                onValueChange={handleSelectChange('from')}
               >
-                <MenuItem value="ihub (support@smsgroup-support.freshdesk.com)">
-                  ihub (support@smsgroup-support.freshdesk.com)
-                </MenuItem>
-                <MenuItem value="admin (admin@smsgroup-support.freshdesk.com)">
-                  admin (admin@smsgroup-support.freshdesk.com)
-                </MenuItem>
-                <MenuItem value="noreply (noreply@smsgroup-support.freshdesk.com)">
-                  noreply (noreply@smsgroup-support.freshdesk.com)
-                </MenuItem>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select sender" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ihub (support@smsgroup-support.freshdesk.com)">
+                    ihub (support@smsgroup-support.freshdesk.com)
+                  </SelectItem>
+                  <SelectItem value="admin (admin@smsgroup-support.freshdesk.com)">
+                    admin (admin@smsgroup-support.freshdesk.com)
+                  </SelectItem>
+                  <SelectItem value="noreply (noreply@smsgroup-support.freshdesk.com)">
+                    noreply (noreply@smsgroup-support.freshdesk.com)
+                  </SelectItem>
+                </SelectContent>
               </Select>
-            </FormControl>
-          </Box>
+            </div>
 
-          {/* To Field */}
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
-              To *
-            </Typography>
-            <TextField
-              fullWidth
-              size="small"
-              value={formData.to}
-              onChange={handleChange('to')}
-              onBlur={handleBlur('to')}
-              placeholder="Enter recipient email address"
-              error={!!validationErrors.to}
-              helperText={validationErrors.to}
-            />
-            <Box sx={{ mt: 1, display: 'flex', gap: 1 }}>
-              <Link 
-                href="#" 
-                variant="body2" 
-                color="primary"
-                underline="hover"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setShowCc(!showCc);
-                }}
-              >
-                {showCc ? 'Hide Cc' : 'Add Cc'}
-              </Link>
-              <Typography variant="body2" color="text.secondary">
-                |
-              </Typography>
-              <Link 
-                href="#" 
-                variant="body2" 
-                color="primary"
-                underline="hover"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setShowBcc(!showBcc);
-                }}
-              >
-                {showBcc ? 'Hide Bcc' : 'Add Bcc'}
-              </Link>
-            </Box>
-          </Box>
-
-          {/* CC Field */}
-          <Collapse in={showCc}>
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
-                Cc
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
-                <TextField
-                  fullWidth
-                  size="small"
-                  value={ccInput}
-                  onChange={(e) => setCcInput(e.target.value)}
-                  placeholder="Enter email address"
-                  onKeyPress={handleKeyPress(handleAddCc)}
-                  error={!!validationErrors.cc}
-                />
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={handleAddCc}
-                  startIcon={<Add />}
-                  disabled={!ccInput.trim()}
+            {/* To Field */}
+            <div className="mb-6">
+              <Label>To *</Label>
+              <Input
+                value={formData.to}
+                onChange={handleChange('to')}
+                onBlur={handleBlur('to')}
+                placeholder="Enter recipient email address"
+                error={validationErrors.to}
+              />
+              <div className="mt-2 flex gap-2 text-sm">
+                <button
+                  type="button"
+                  className="text-blue-600 hover:underline"
+                  onClick={() => setShowCc(!showCc)}
                 >
-                  Add
-                </Button>
-              </Box>
-              {validationErrors.cc && (
-                <FormHelperText error>
-                  {validationErrors.cc}
-                </FormHelperText>
-              )}
-              {formData.cc.length > 0 && (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
-                  {formData.cc.map((email, index) => (
-                    <Chip
-                      key={index}
-                      label={email}
-                      onDelete={() => handleRemoveCc(email)}
-                      deleteIcon={<Close />}
-                      size="small"
-                      color="primary"
-                      variant="outlined"
-                    />
-                  ))}
-                </Box>
-              )}
-            </Box>
-          </Collapse>
-
-          {/* BCC Field */}
-          <Collapse in={showBcc}>
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
-                Bcc
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
-                <TextField
-                  fullWidth
-                  size="small"
-                  value={bccInput}
-                  onChange={(e) => setBccInput(e.target.value)}
-                  placeholder="Enter email address"
-                  onKeyPress={handleKeyPress(handleAddBcc)}
-                  error={!!validationErrors.bcc}
-                />
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={handleAddBcc}
-                  startIcon={<Add />}
-                  disabled={!bccInput.trim()}
+                  {showCc ? 'Hide Cc' : 'Add Cc'}
+                </button>
+                <span className="text-slate-400">|</span>
+                <button
+                  type="button"
+                  className="text-blue-600 hover:underline"
+                  onClick={() => setShowBcc(!showBcc)}
                 >
-                  Add
-                </Button>
-              </Box>
-              {validationErrors.bcc && (
-                <FormHelperText error>
-                  {validationErrors.bcc}
-                </FormHelperText>
-              )}
-              {formData.bcc.length > 0 && (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
-                  {formData.bcc.map((email, index) => (
-                    <Chip
-                      key={index}
-                      label={email}
-                      onDelete={() => handleRemoveBcc(email)}
-                      deleteIcon={<Close />}
-                      size="small"
-                      color="secondary"
-                      variant="outlined"
-                    />
-                  ))}
-                </Box>
-              )}
-            </Box>
-          </Collapse>
+                  {showBcc ? 'Hide Bcc' : 'Add Bcc'}
+                </button>
+              </div>
+            </div>
 
-          {/* Subject Field */}
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
-              Subject *
-            </Typography>
-            <TextField
-              fullWidth
-              size="small"
-              value={formData.subject}
-              onChange={handleChange('subject')}
-              onBlur={handleBlur('subject')}
-              placeholder="Enter subject"
-              error={!!validationErrors.subject}
-              helperText={validationErrors.subject || `${formData.subject.length}/100 characters`}
-              inputProps={{ maxLength: 100 }}
-            />
-          </Box>
+            {/* CC Field */}
+            {showCc && (
+              <div className="mb-6">
+                <Label>Cc</Label>
+                <div className="flex gap-2 mb-2">
+                  <Input
+                    value={ccInput}
+                    onChange={(e) => setCcInput(e.target.value)}
+                    placeholder="Enter email address"
+                    onKeyPress={handleKeyPress(handleAddCc)}
+                    error={validationErrors.cc}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleAddCc}
+                    disabled={!ccInput.trim()}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add
+                  </Button>
+                </div>
+                {formData.cc.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {formData.cc.map((email, index) => (
+                      <Badge
+                        key={index}
+                        variant="outline"
+                        className="bg-blue-50"
+                      >
+                        {email}
+                        <button
+                          type="button"
+                          className="ml-1 hover:text-red-500"
+                          onClick={() => handleRemoveCc(email)}
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
-          {/* Description Field with Toolbar */}
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
-              Description *
-            </Typography>
-            
-            {/* Rich Text Toolbar */}
-            <Paper variant="outlined" sx={{ mb: 0 }}>
-              <Toolbar 
-                sx={{ 
-                  minHeight: '48px !important', 
-                  px: 1,
-                  borderBottom: '1px solid',
-                  borderColor: 'divider'
-                }}
-              >
-                <IconButton size="small" sx={{ mr: 0.5 }} title="Bold">
-                  <FormatBold fontSize="small" />
-                </IconButton>
-                <IconButton size="small" sx={{ mr: 0.5 }} title="Italic">
-                  <FormatItalic fontSize="small" />
-                </IconButton>
-                <IconButton size="small" sx={{ mr: 1 }} title="Underline">
-                  <FormatUnderlined fontSize="small" />
-                </IconButton>
-                
-                <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-                
-                <IconButton size="small" sx={{ mr: 0.5 }} title="Align Left">
-                  <FormatAlignLeft fontSize="small" />
-                </IconButton>
-                <IconButton size="small" sx={{ mr: 0.5 }} title="Align Center">
-                  <FormatAlignCenter fontSize="small" />
-                </IconButton>
-                <IconButton size="small" sx={{ mr: 0.5 }} title="Align Right">
-                  <FormatAlignRight fontSize="small" />
-                </IconButton>
-                <IconButton size="small" sx={{ mr: 1 }} title="Justify">
-                  <FormatAlignJustify fontSize="small" />
-                </IconButton>
-                
-                <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-                
-                <IconButton size="small" sx={{ mr: 0.5 }} title="Bullet List">
-                  <FormatListBulleted fontSize="small" />
-                </IconButton>
-                <IconButton size="small" sx={{ mr: 0.5 }} title="Numbered List">
-                  <FormatListNumbered fontSize="small" />
-                </IconButton>
-                
-                <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-                
-                <IconButton size="small" sx={{ mr: 0.5 }} title="Link">
-                  <LinkIcon fontSize="small" />
-                </IconButton>
-                <IconButton size="small" sx={{ mr: 0.5 }} title="Code">
-                  <Code fontSize="small" />
-                </IconButton>
-                <IconButton size="small" sx={{ mr: 0.5 }} title="Image">
-                  <Image fontSize="small" />
-                </IconButton>
-                <IconButton size="small" sx={{ mr: 0.5 }} title="Quote">
-                  <FormatQuote fontSize="small" />
-                </IconButton>
-              </Toolbar>
-              
-              {/* Second toolbar row */}
-              <Toolbar 
-                sx={{ 
-                  minHeight: '48px !important', 
-                  px: 1,
-                  borderTop: '1px solid',
-                  borderColor: 'divider'
-                }}
-              >
-                <IconButton size="small" sx={{ mr: 0.5 }} title="Attach File">
-                  <AttachFile fontSize="small" />
-                </IconButton>
-                <IconButton size="small" sx={{ mr: 0.5 }} title="Insert Photo">
-                  <InsertPhoto fontSize="small" />
-                </IconButton>
-                <IconButton size="small" sx={{ mr: 0.5 }} title="Insert Table">
-                  <TableChart fontSize="small" />
-                </IconButton>
-              </Toolbar>
-            </Paper>
-            
-            <TextField
-              fullWidth
-              multiline
-              rows={8}
-              value={formData.description}
-              onChange={handleChange('description')}
-              onBlur={handleBlur('description')}
-              placeholder="Enter detailed description of the issue..."
-              error={!!validationErrors.description}
-              helperText={validationErrors.description || `${formData.description.length}/2000 characters`}
-              inputProps={{ maxLength: 2000 }}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderTopLeftRadius: 0,
-                  borderTopRightRadius: 0,
-                }
-              }}
-            />
-          </Box>
+            {/* BCC Field */}
+            {showBcc && (
+              <div className="mb-6">
+                <Label>Bcc</Label>
+                <div className="flex gap-2 mb-2">
+                  <Input
+                    value={bccInput}
+                    onChange={(e) => setBccInput(e.target.value)}
+                    placeholder="Enter email address"
+                    onKeyPress={handleKeyPress(handleAddBcc)}
+                    error={validationErrors.bcc}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleAddBcc}
+                    disabled={!bccInput.trim()}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add
+                  </Button>
+                </div>
+                {formData.bcc.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {formData.bcc.map((email, index) => (
+                      <Badge
+                        key={index}
+                        variant="outline"
+                        className="bg-slate-50"
+                      >
+                        {email}
+                        <button
+                          type="button"
+                          className="ml-1 hover:text-red-500"
+                          onClick={() => handleRemoveBcc(email)}
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
-          {/* Priority and Status Fields */}
-          <Grid container spacing={2} sx={{ mb: 3 }}>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
-                Priority *
-              </Typography>
-              <FormControl fullWidth size="small">
+            {/* Subject Field */}
+            <div className="mb-6">
+              <Label>Subject *</Label>
+              <Input
+                value={formData.subject}
+                onChange={handleChange('subject')}
+                onBlur={handleBlur('subject')}
+                placeholder="Enter subject"
+                error={validationErrors.subject}
+                maxLength={100}
+              />
+              <p className="mt-1 text-xs text-slate-500">
+                {formData.subject.length}/100 characters
+              </p>
+            </div>
+
+            {/* Description Field */}
+            <div className="mb-6">
+              <Label>Description *</Label>
+              <RichTextEditor
+                value={formData.description}
+                onChange={handleChange('description')}
+                onBlur={handleBlur('description')}
+                placeholder="Enter detailed description of the issue..."
+                error={validationErrors.description}
+                maxLength={2000}
+              />
+              <p className="mt-1 text-xs text-slate-500">
+                {formData.description.length}/2000 characters
+              </p>
+            </div>
+
+            {/* Priority and Status Fields */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+              <div>
+                <Label>Priority *</Label>
                 <Select
                   value={formData.priority}
-                  onChange={handleChange('priority')}
-                  error={!!validationErrors.priority}
+                  onValueChange={handleSelectChange('priority')}
                 >
-                  <MenuItem value="Low">Low</MenuItem>
-                  <MenuItem value="Medium">Medium</MenuItem>
-                  <MenuItem value="High">High</MenuItem>
-                  <MenuItem value="Urgent">Urgent</MenuItem>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select priority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Low">Low</SelectItem>
+                    <SelectItem value="Medium">Medium</SelectItem>
+                    <SelectItem value="High">High</SelectItem>
+                    <SelectItem value="Urgent">Urgent</SelectItem>
+                  </SelectContent>
                 </Select>
-              </FormControl>
-              {validationErrors.priority && (
-                <FormHelperText error>
-                  {validationErrors.priority}
-                </FormHelperText>
-              )}
-            </Grid>
-            
-            <Grid item xs={12} sm={6}>
-              <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
-                Status *
-              </Typography>
-              <FormControl fullWidth size="small">
+              </div>
+              
+              <div>
+                <Label>Status *</Label>
                 <Select
                   value={formData.status}
-                  onChange={handleChange('status')}
-                  error={!!validationErrors.status}
+                  onValueChange={handleSelectChange('status')}
                 >
-                  <MenuItem value="Open">Open</MenuItem>
-                  <MenuItem value="Pending">Pending</MenuItem>
-                  <MenuItem value="In Progress">In Progress</MenuItem>
-                  <MenuItem value="Resolved">Resolved</MenuItem>
-                  <MenuItem value="Closed">Closed</MenuItem>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Open">Open</SelectItem>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                    <SelectItem value="In Progress">In Progress</SelectItem>
+                    <SelectItem value="Resolved">Resolved</SelectItem>
+                    <SelectItem value="Closed">Closed</SelectItem>
+                  </SelectContent>
                 </Select>
-              </FormControl>
-              {validationErrors.status && (
-                <FormHelperText error>
-                  {validationErrors.status}
-                </FormHelperText>
-              )}
-            </Grid>
-          </Grid>
+              </div>
+            </div>
 
-          {/* Tags Field */}
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
-              Tags
-            </Typography>
-            <TextField
-              fullWidth
-              size="small"
-              value={formData.tags}
-              onChange={handleChange('tags')}
-              placeholder="Enter tags separated by commas (e.g., bug, urgent, ui)"
-              error={!!validationErrors.tags}
-              helperText={validationErrors.tags || "Separate multiple tags with commas"}
-            />
-          </Box>
+            {/* Tags Field */}
+            <div className="mb-6">
+              <Label>Tags</Label>
+              <Input
+                value={formData.tags}
+                onChange={handleChange('tags')}
+                placeholder="Enter tags separated by commas (e.g., bug, urgent, ui)"
+                error={validationErrors.tags}
+              />
+              <p className="mt-1 text-xs text-slate-500">
+                Separate multiple tags with commas
+              </p>
+            </div>
 
-          {/* Show More Fields Link */}
-          <Box sx={{ mb: 3 }}>
-            <Link
-              href="#"
-              variant="body2"
-              color="primary"
-              underline="hover"
-              onClick={(e) => {
-                e.preventDefault();
-                setShowMoreFields(!showMoreFields);
-              }}
-            >
-              {showMoreFields ? 'Show fewer fields' : 'Show more fields'}
-            </Link>
-          </Box>
+            {/* Show More Fields Link */}
+            <div className="mb-6">
+              <button
+                type="button"
+                className="text-blue-600 hover:underline text-sm flex items-center"
+                onClick={() => setShowMoreFields(!showMoreFields)}
+              >
+                {showMoreFields ? (
+                  <>
+                    <ChevronUp className="h-4 w-4 mr-1" />
+                    Show fewer fields
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="h-4 w-4 mr-1" />
+                    Show more fields
+                  </>
+                )}
+              </button>
+            </div>
 
-          {/* Additional Fields */}
-          <Collapse in={showMoreFields}>
-            <Box sx={{ mb: 3 }}>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
-                    Group
-                  </Typography>
-                  <FormControl fullWidth size="small">
+            {/* Additional Fields */}
+            {showMoreFields && (
+              <div className="mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div>
+                    <Label>Group</Label>
                     <Select
                       value={formData.group}
-                      onChange={handleChange('group')}
-                      displayEmpty
+                      onValueChange={handleSelectChange('group')}
                     >
-                      <MenuItem value="">
-                        <em>Select group</em>
-                      </MenuItem>
-                      <MenuItem value="Technical Support">Technical Support</MenuItem>
-                      <MenuItem value="Customer Service">Customer Service</MenuItem>
-                      <MenuItem value="Sales">Sales</MenuItem>
-                      <MenuItem value="Billing">Billing</MenuItem>
-                      <MenuItem value="General Inquiry">General Inquiry</MenuItem>
-                      <MenuItem value="IT Support">IT Support</MenuItem>
-                      <MenuItem value="Account Management">Account Management</MenuItem>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select group" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Technical Support">Technical Support</SelectItem>
+                        <SelectItem value="Customer Service">Customer Service</SelectItem>
+                        <SelectItem value="Sales">Sales</SelectItem>
+                        <SelectItem value="Billing">Billing</SelectItem>
+                        <SelectItem value="General Inquiry">General Inquiry</SelectItem>
+                        <SelectItem value="IT Support">IT Support</SelectItem>
+                        <SelectItem value="Account Management">Account Management</SelectItem>
+                      </SelectContent>
                     </Select>
-                  </FormControl>
-                </Grid>
-                
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
-                    Type
-                  </Typography>
-                  <FormControl fullWidth size="small">
+                  </div>
+                  
+                  <div>
+                    <Label>Type</Label>
                     <Select
                       value={formData.type}
-                      onChange={handleChange('type')}
-                      displayEmpty
+                      onValueChange={handleSelectChange('type')}
                     >
-                      <MenuItem value="">
-                        <em>Select type</em>
-                      </MenuItem>
-                      <MenuItem value="Technical Support">Technical Support</MenuItem>
-                      <MenuItem value="Customer Service">Customer Service</MenuItem>
-                      <MenuItem value="Sales">Sales</MenuItem>
-                      <MenuItem value="Billing">Billing</MenuItem>
-                      <MenuItem value="General Inquiry">General Inquiry</MenuItem>
-                      <MenuItem value="IT Support">IT Support</MenuItem>
-                      <MenuItem value="Account Management">Account Management</MenuItem>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Bug Report">Bug Report</SelectItem>
+                        <SelectItem value="Feature Request">Feature Request</SelectItem>
+                        <SelectItem value="Question">Question</SelectItem>
+                        <SelectItem value="Complaint">Complaint</SelectItem>
+                        <SelectItem value="Feedback">Feedback</SelectItem>
+                        <SelectItem value="Technical Issue">Technical Issue</SelectItem>
+                        <SelectItem value="Account Issue">Account Issue</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
                     </Select>
-                  </FormControl>
-                </Grid>
-                
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
-                    Type
-                  </Typography>
-                  <FormControl fullWidth size="small">
-                    <Select
-                      value={formData.type}
-                      onChange={handleChange('type')}
-                      displayEmpty
-                    >
-                      <MenuItem value="">
-                        <em>Select type</em>
-                      </MenuItem>
-                      <MenuItem value="Bug Report">Bug Report</MenuItem>
-                      <MenuItem value="Feature Request">Feature Request</MenuItem>
-                      <MenuItem value="Question">Question</MenuItem>
-                      <MenuItem value="Complaint">Complaint</MenuItem>
-                      <MenuItem value="Feedback">Feedback</MenuItem>
-                      <MenuItem value="Technical Issue">Technical Issue</MenuItem>
-                      <MenuItem value="Account Issue">Account Issue</MenuItem>
-                      <MenuItem value="Other">Other</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                
-                <Grid item xs={12}>
-                  <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
-                    Reference Number
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    value={formData.referenceNumber}
-                    onChange={handleChange('referenceNumber')}
-                    placeholder="Enter reference number if applicable (e.g., existing ticket ID)"
-                  />
-                </Grid>
-              </Grid>
-            </Box>
-          </Collapse>
+                  </div>
+                  
+                  <div className="sm:col-span-2">
+                    <Label>Reference Number</Label>
+                    <Input
+                      value={formData.referenceNumber}
+                      onChange={handleChange('referenceNumber')}
+                      placeholder="Enter reference number if applicable (e.g., existing ticket ID)"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
 
-          {/* Action Buttons */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, pt: 3, borderTop: '1px solid', borderColor: 'divider' }}>
-            <FormControlLabel
-              control={
+            {/* Action Buttons */}
+            <div className="flex items-center gap-4 pt-6 border-t border-slate-200">
+              <div className="flex items-center gap-2">
                 <Checkbox
+                  id="sendAnother"
                   checked={formData.sendAnother}
-                  onChange={handleCheckboxChange}
-                  size="small"
+                  onCheckedChange={handleCheckboxChange}
                 />
-              }
-              label="Send another ticket after this one"
-            />
-            
-            <Box sx={{ ml: 'auto', display: 'flex', gap: 2 }}>
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={handleCancel}
-                startIcon={<Cancel />}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                startIcon={isSubmitting ? <CircularProgress size={20} /> : <Send />}
-                disabled={isSubmitting}
-                sx={{ minWidth: 120 }}
-              >
-                {isSubmitting ? 'Sending...' : 'Send Ticket'}
-              </Button>
-            </Box>
-          </Box>
-        </form>
-      </Paper>
+                <Label htmlFor="sendAnother" className="text-sm">
+                  Send another email after this one
+                </Label>
+              </div>
+              
+              <div className="ml-auto flex gap-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCancel}
+                  disabled={isSubmitting}
+                >
+                  <XCircle className="h-4 w-4 mr-2" />
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="min-w-[120px]"
+                >
+                  {isSubmitting ? (
+                    <span className="flex items-center">
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Sending...
+                    </span>
+                  ) : (
+                    <>
+                      <Send className="h-4 w-4 mr-2" />
+                      Send Email
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </form>
+        </Card>
 
-      {/* Notification Snackbar */}
-      <Snackbar
-        open={notification.open}
-        autoHideDuration={6000}
-        onClose={closeNotification}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      >
-        <Alert
-          onClose={closeNotification}
-          severity={notification.severity}
-          sx={{ width: '100%' }}
-        >
-          {notification.message}
-        </Alert>
-      </Snackbar>
-    </Box>
+        {/* Toast Notifications */}
+        <ToastViewport />
+        {notification.open && (
+          <Toast
+            variant={notification.type}
+            onOpenChange={(open) => {
+              if (!open) closeNotification();
+            }}
+          >
+            <div className="flex">
+              {notification.type === 'default' ? (
+                <CheckCircle2 className="h-4 w-4 text-green-600" />
+              ) : notification.type === 'destructive' ? (
+                <AlertTriangle className="h-4 w-4 text-red-600" />
+              ) : (
+                <AlertTriangle className="h-4 w-4 text-yellow-600" />
+              )}
+              <ToastDescription className="ml-2">
+                {notification.message}
+              </ToastDescription>
+            </div>
+            <ToastClose />
+          </Toast>
+        )}
+      </div>
+    </ToastProvider>
   );
 };
 
-export default SupportTicketForm;
+export default EmailForm;

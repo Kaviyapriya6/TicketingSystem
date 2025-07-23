@@ -1,26 +1,15 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  Link,
-  Divider,
-  IconButton,
-  InputAdornment,
-  Alert,
-  CircularProgress
-} from '@mui/material';
-import {
-  Visibility,
-  VisibilityOff,
-  Lock as LockIcon,
-  Email as EmailIcon
-} from '@mui/icons-material';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '../../../contexts/AuthContext';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { Loader2, Lock, Mail, Eye, EyeOff } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const LoginPage = () => {
   const router = useRouter();
@@ -86,207 +75,124 @@ const LoginPage = () => {
   };
 
   return (
-    <Box sx={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: '#f5f5f5',
-      padding: 2
-    }}>
-      <Paper 
-        elevation={3}
-        sx={{
-          width: '100%',
-          maxWidth: 400,
-          padding: 4,
-          borderRadius: 2,
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-        }}
-      >
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+      <Card className="w-full max-w-md p-8 shadow-lg">
         {/* Header */}
-        <Box sx={{ textAlign: 'center', marginBottom: 3 }}>
-          <LockIcon 
-            sx={{ 
-              fontSize: 48, 
-              color: 'primary.main', 
-              marginBottom: 2 
-            }} 
-          />
-          <Typography 
-            variant="h4" 
-            sx={{ 
-              fontWeight: 600,
-              color: '#1a1a1a',
-              marginBottom: 1
-            }}
-          >
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-600 mb-4">
+            <Lock className="w-6 h-6" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Welcome Back
-          </Typography>
-          <Typography 
-            variant="body2" 
-            sx={{ 
-              color: '#6b7280',
-              fontSize: '0.875rem'
-            }}
-          >
+          </h1>
+          <p className="text-sm text-gray-600">
             Sign in to your Support Bot account
-          </Typography>
-        </Box>
+          </p>
+        </div>
 
         {/* Success Alert */}
         {successMessage && (
-          <Alert 
-            severity="success" 
-            sx={{ marginBottom: 2 }}
-            onClose={() => setSuccessMessage('')}
-          >
-            {successMessage}
+          <Alert variant="success" className="mb-4" onClose={() => setSuccessMessage('')}>
+            <AlertDescription>{successMessage}</AlertDescription>
           </Alert>
         )}
 
         {/* Error Alert */}
         {error && (
-          <Alert 
-            severity="error" 
-            sx={{ marginBottom: 2 }}
-            onClose={() => setError('')}
-          >
-            {error}
+          <Alert variant="destructive" className="mb-4" onClose={() => setError('')}>
+            <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
 
         {/* Login Form */}
-        <Box component="form" onSubmit={handleSubmit}>
-          <TextField
-            fullWidth
-            name="email"
-            label="Email Address"
-            type="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            margin="normal"
-            required
-            disabled={loading}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <EmailIcon sx={{ color: '#6b7280' }} />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: 1,
-              }
-            }}
-          />
+        <form onSubmit={handleSubmit}>
+          <div className="space-y-4">
+            <div className="relative">
+              <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Input
+                name="email"
+                type="email"
+                placeholder="Email Address"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+                disabled={loading}
+                className="pl-10"
+              />
+            </div>
 
-          <TextField
-            fullWidth
-            name="password"
-            label="Password"
-            type={showPassword ? 'text' : 'password'}
-            value={formData.password}
-            onChange={handleInputChange}
-            margin="normal"
-            required
-            disabled={loading}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={togglePasswordVisibility}
-                    edge="end"
-                    disabled={loading}
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: 1,
-              }
-            }}
-          />
+            <div className="relative">
+              <Input
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleInputChange}
+                required
+                disabled={loading}
+                className="pr-10"
+              />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                disabled={loading}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
 
-          {/* Forgot Password Link */}
-          <Box sx={{ textAlign: 'right', marginTop: 1, marginBottom: 2 }}>
-            <Link 
-              href="/auth/forgot-password" 
-              sx={{ 
-                color: 'primary.main',
-                textDecoration: 'none',
-                fontSize: '0.875rem',
-                '&:hover': {
-                  textDecoration: 'underline'
-                }
-              }}
+            {/* Forgot Password Link */}
+            <div className="text-right">
+              <Link
+                href="/auth/forgot-password"
+                className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
+            {/* Sign In Button */}
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={loading}
             >
-              Forgot password?
-            </Link>
-          </Box>
-
-          {/* Sign In Button */}
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            disabled={loading}
-            sx={{
-              marginTop: 2,
-              marginBottom: 2,
-              padding: '12px',
-              fontSize: '1rem',
-              fontWeight: 500,
-              textTransform: 'none',
-              backgroundColor: 'primary.main',
-              '&:hover': {
-                backgroundColor: '#1d4ed8',
-              },
-              '&:disabled': {
-                backgroundColor: '#9ca3af',
-              },
-            }}
-          >
-            {loading ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : (
-              'Sign In'
-            )}
-          </Button>
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                'Sign In'
+              )}
+            </Button>
+          </div>
 
           {/* Divider */}
-          <Divider sx={{ marginY: 2 }}>
-            <Typography variant="body2" sx={{ color: '#6b7280', fontSize: '0.75rem' }}>
+          <div className="relative my-8">
+            <Separator />
+            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-2 text-xs text-gray-500">
               OR
-            </Typography>
-          </Divider>
+            </span>
+          </div>
 
           {/* Sign Up Link */}
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography variant="body2" sx={{ color: '#6b7280', fontSize: '0.875rem' }}>
+          <div className="text-center">
+            <p className="text-sm text-gray-600">
               Don't have an account?{' '}
-              <Link 
-                href="/auth/signup" 
-                sx={{ 
-                  color: 'primary.main',
-                  textDecoration: 'none',
-                  fontWeight: 500,
-                  '&:hover': {
-                    textDecoration: 'underline'
-                  }
-                }}
+              <Link
+                href="/auth/signup"
+                className="text-blue-600 hover:text-blue-800 hover:underline font-medium"
               >
                 Sign up here
               </Link>
-            </Typography>
-          </Box>
-        </Box>
-      </Paper>
-    </Box>
+            </p>
+          </div>
+        </form>
+      </Card>
+    </div>
   );
 };
 

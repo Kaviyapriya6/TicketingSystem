@@ -2,7 +2,6 @@
 
 import TicketForm from '@/components/TicketForm';
 import { useRouter } from 'next/navigation';
-import { Box, Typography } from '@mui/material';
 
 export default function CreateTicket() {
   const router = useRouter();
@@ -48,15 +47,15 @@ export default function CreateTicket() {
   };
 
   return (
-    <Box p={4}>
-      {/* <Typography variant="h4" gutterBottom>
+    <div className="p-6">
+      {/* <h1 className="text-2xl font-semibold text-slate-900 mb-6">
         Create Ticket
-      </Typography> */}
+      </h1> */}
       <TicketForm
         initialValues={initialValues}
         onSubmit={handleSubmit}
         mode="create"
       />
-    </Box>
+    </div>
   );
 }

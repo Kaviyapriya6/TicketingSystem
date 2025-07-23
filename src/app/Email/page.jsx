@@ -1,61 +1,45 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Paper,
-  Typography,
-  Button,
-  Checkbox,
-  Avatar,
-  Chip,
-  Select,
-  MenuItem,
-  FormControl,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Divider,
-  Alert,
-  IconButton,
-  CircularProgress,
-  Snackbar,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions
-} from '@mui/material';
-import {
-  Email,
-  MoreVert,
-  KeyboardArrowDown,
-  SupportAgent,
-  EmojiEmotions,
-  Person,
-  Schedule,
-  CheckCircle,
-  PriorityHigh,
-  Business,
-  Refresh,
-  Delete,
-  Edit
-} from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Avatar } from "@/components/ui/avatar";
+import {
+  Mail,
+  MoreVertical,
+  ChevronDown,
+  Headphones,
+  SmilePlus,
+  User,
+  Clock,
+  CheckCircle2,
+  AlertTriangle,
+  Building2,
+  RefreshCw,
+  Trash2,
+  PencilLine,
+  Loader2
+} from 'lucide-react';
 
-const SupportTicketList = () => {
+const EmailList = () => {
   const router = useRouter();
-  const [tickets, setTickets] = useState([]);
+  const [emails, setEmails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedTickets, setSelectedTickets] = useState([]);
-  const [notification, setNotification] = useState({ show: false, message: '', type: 'success' });
+  const [selectedEmails, setSelectedEmails] = useState([]);
+  const [notification, setNotification] = useState({ show: false, message: '', type: 'default' });
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [ticketToDelete, setTicketToDelete] = useState(null);
+  const [emailToDelete, setEmailToDelete] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
-  const [updatingTicket, setUpdatingTicket] = useState(null);
+  const [updatingEmail, setUpdatingEmail] = useState(null);
 
-  const fetchTickets = async () => {
+  const fetchEmails = async () => {
     try {
       setLoading(true);
       setError(null);
@@ -69,13 +53,13 @@ const SupportTicketList = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP ${response.status}: Failed to fetch tickets`);
+        throw new Error(errorData.message || `HTTP ${response.status}: Failed to fetch emails`);
       }
       
       const data = await response.json();
-      setTickets(Array.isArray(data) ? data : []);
+      setEmails(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.error('Fetch tickets error:', err);
+      console.error('Fetch emails error:', err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -83,29 +67,29 @@ const SupportTicketList = () => {
   };
 
   useEffect(() => {
-    fetchTickets();
+    fetchEmails();
   }, []);
 
-  const handleEditClick = (ticket) => {
+  const handleEditClick = (email) => {
     try {
-      console.log('Editing ticket:', ticket);
-      router.push(`/email/edit/${ticket._id}`);
+      console.log('Editing email:', email);
+      router.push(`/Email/edit/${email._id}`);
     } catch (err) {
       console.error('Edit navigation error:', err);
-      showNotification('Failed to navigate to edit page', 'error');
+      showNotification('Failed to navigate to edit page', 'destructive');
     }
   };
 
-  const handleDeleteClick = (ticket) => {
-    console.log('Delete clicked for ticket:', ticket);
-    setTicketToDelete(ticket);
+  const handleDeleteClick = (email) => {
+    console.log('Delete clicked for email:', email);
+    setEmailToDelete(email);
     setConfirmDelete(true);
   };
 
-  const deleteTicket = async (id) => {
+  const deleteEmail = async (id) => {
     try {
       setActionLoading(true);
-      console.log('Deleting ticket with ID:', id);
+      console.log('Deleting email with ID:', id);
       
       const response = await fetch(`/api/email/${id}`, {
         method: 'DELETE',
@@ -120,23 +104,22 @@ const SupportTicketList = () => {
         throw new Error(errorData.message || `HTTP ${response.status}: Delete request failed`);
       }
 
-      // Remove ticket from local state
-      setTickets(prev => prev.filter(t => t._id !== id));
-      setSelectedTickets(prev => prev.filter(ticketId => ticketId !== id));
-      showNotification('Ticket deleted successfully', 'success');
+      setEmails(prev => prev.filter(t => t._id !== id));
+      setSelectedEmails(prev => prev.filter(emailId => emailId !== id));
+      showNotification('Email deleted successfully', 'default');
     } catch (err) {
-      console.error('Delete ticket error:', err);
-      showNotification(`Failed to delete ticket: ${err.message}`, 'error');
+      console.error('Delete email error:', err);
+      showNotification(`Failed to delete email: ${err.message}`, 'destructive');
     } finally {
       setActionLoading(false);
     }
   };
 
-  const updateTicketField = async (ticketId, field, value) => {
+  const updateEmailField = async (emailId, field, value) => {
     try {
-      setUpdatingTicket(ticketId);
+      setUpdatingEmail(emailId);
       
-      const response = await fetch(`/api/email/${ticketId}`, {
+      const response = await fetch(`/api/email/${emailId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -150,80 +133,75 @@ const SupportTicketList = () => {
         throw new Error(errorData.message || `HTTP ${response.status}: Update request failed`);
       }
 
-      // Update ticket in local state
-      setTickets(prev => prev.map(ticket => 
-        ticket._id === ticketId 
-          ? { ...ticket, [field]: value }
-          : ticket
+      setEmails(prev => prev.map(email => 
+        email._id === emailId 
+          ? { ...email, [field]: value }
+          : email
       ));
       
-      showNotification(`Ticket ${field} updated successfully`, 'success');
+      showNotification(`Email ${field} updated successfully`, 'default');
     } catch (err) {
-      console.error('Update ticket error:', err);
-      showNotification(`Failed to update ticket: ${err.message}`, 'error');
+      console.error('Update email error:', err);
+      showNotification(`Failed to update email: ${err.message}`, 'destructive');
     } finally {
-      setUpdatingTicket(null);
+      setUpdatingEmail(null);
     }
   };
 
-  const handleSelectTicket = (ticketId) => {
-    setSelectedTickets(prev => 
-      prev.includes(ticketId) 
-        ? prev.filter(id => id !== ticketId)
-        : [...prev, ticketId]
+  const handleSelectEmail = (emailId) => {
+    setSelectedEmails(prev => 
+      prev.includes(emailId) 
+        ? prev.filter(id => id !== emailId)
+        : [...prev, emailId]
     );
   };
 
-  const handleSelectAll = (event) => {
-    if (event.target.checked) {
-      setSelectedTickets(tickets.map(ticket => ticket._id));
+  const handleSelectAll = (checked) => {
+    if (checked) {
+      setSelectedEmails(emails.map(email => email._id));
     } else {
-      setSelectedTickets([]);
+      setSelectedEmails([]);
     }
   };
 
   const handleConfirmDelete = async () => {
-    if (ticketToDelete) {
-      await deleteTicket(ticketToDelete._id);
+    if (emailToDelete) {
+      await deleteEmail(emailToDelete._id);
       setConfirmDelete(false);
-      setTicketToDelete(null);
+      setEmailToDelete(null);
     }
   };
 
   const handleCancelDelete = () => {
     setConfirmDelete(false);
-    setTicketToDelete(null);
+    setEmailToDelete(null);
   };
 
-  const showNotification = (message, type = 'success') => {
+  const showNotification = (message, type = 'default') => {
     setNotification({ show: true, message, type });
-  };
-
-  const handleCloseNotification = () => {
-    setNotification({ show: false, message: '', type: 'success' });
   };
 
   const getPriorityColor = (priority) => {
     switch (priority?.toLowerCase()) {
-      case 'low': return '#4caf50';
-      case 'medium': return '#ff9800';
-      case 'high': return '#f44336';
-      case 'urgent': return '#9c27b0';
-      default: return '#757575';
+      case 'low': return 'bg-green-100 text-green-700';
+      case 'medium': return 'bg-yellow-100 text-yellow-700';
+      case 'high': return 'bg-red-100 text-red-700';
+      case 'urgent': return 'bg-purple-100 text-purple-700';
+      default: return 'bg-slate-100 text-slate-700';
     }
   };
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
-      case 'open': return '#4caf50';
-      case 'pending': return '#ff9800';
-      case 'closed': return '#757575';
-      default: return '#757575';
+      case 'open': return 'bg-green-100 text-green-700';
+      case 'pending': return 'bg-yellow-100 text-yellow-700';
+      case 'closed': return 'bg-slate-100 text-slate-700';
+      default: return 'bg-slate-100 text-slate-700';
     }
   };
 
   const generateAvatarColor = (name) => {
-    const colors = ['#4FC3F7', '#81C784', '#FFB74D', '#F06292', '#BA68C8'];
+    const colors = ['bg-sky-500', 'bg-green-500', 'bg-orange-500', 'bg-pink-500', 'bg-purple-500'];
     return colors[(name?.length || 0) % colors.length];
   };
 
@@ -250,290 +228,257 @@ const SupportTicketList = () => {
     }
   };
 
-  const handleCreateTicket = () => {
-    router.push('/email/create');
+  const handleCreateEmail = () => {
+    // router.push('/Email/create');
   };
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto', p: 2 }}>
+    <div className="max-w-7xl mx-auto p-4">
       {/* Header */}
-      <Paper elevation={1} sx={{ mb: 2, p: 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <SupportAgent sx={{ mr: 2, color: 'primary.main' }} />
-            <Box>
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                Support Tickets ({tickets.length})
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Manage your support tickets and customer communications
-              </Typography>
-            </Box>
-          </Box>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <IconButton onClick={fetchTickets} disabled={loading}>
-              <Refresh />
-            </IconButton>
-            <Button variant="contained" color="primary" onClick={handleCreateTicket}>
-              Create Ticket
+      <Card className="mb-4 p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <Mail className="mr-2 h-5 w-5 text-primary" />
+            <div>
+              <h2 className="text-xl font-semibold">
+                Emails ({emails.length})
+              </h2>
+              <p className="text-sm text-slate-500">
+                Manage your email communications
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={fetchEmails}
+              disabled={loading}
+            >
+              <RefreshCw className="h-4 w-4" />
             </Button>
-          </Box>
-        </Box>
-      </Paper>
+            <Button onClick={handleCreateEmail}>
+              Create Email
+            </Button>
+          </div>
+        </div>
+      </Card>
 
       {/* Loading State */}
       {loading && (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2 }}>
-          <CircularProgress size={24} />
-          <Typography>Loading tickets...</Typography>
-        </Box>
+        <div className="flex items-center gap-2 p-4">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          <p>Loading emails...</p>
+        </div>
       )}
 
       {/* Error State */}
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
+        <Alert variant="destructive" className="mb-4">
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
       {/* Empty State */}
-      {!loading && tickets.length === 0 && (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
-          <Typography color="text.secondary">
-            No support tickets found.
-          </Typography>
-          <Button 
-            variant="outlined" 
-            sx={{ mt: 2 }}
-            onClick={handleCreateTicket}
+      {!loading && emails.length === 0 && (
+        <div className="text-center py-8">
+          <p className="text-slate-500 mb-4">
+            No emails found.
+          </p>
+          <Button
+            variant="outline"
+            onClick={handleCreateEmail}
           >
-            Create your first ticket
+            Create your first email
           </Button>
-        </Box>
+        </div>
       )}
 
-      {/* Ticket List */}
-      {tickets.length > 0 && (
-        <Paper elevation={1}>
+      {/* Email List */}
+      {emails.length > 0 && (
+        <Card>
           {/* Select All Header */}
-          <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
-            <Checkbox
-              checked={selectedTickets.length === tickets.length}
-              indeterminate={selectedTickets.length > 0 && selectedTickets.length < tickets.length}
-              onChange={handleSelectAll}
-              size="small"
-            />
-            {selectedTickets.length > 0 && (
-              <Typography variant="body2" component="span" sx={{ ml: 1 }}>
-                {selectedTickets.length} selected
-              </Typography>
-            )}
-          </Box>
+          <div className="p-4 border-b">
+            <div className="flex items-center">
+              <Checkbox
+                checked={selectedEmails.length === emails.length}
+                onCheckedChange={handleSelectAll}
+              />
+              {selectedEmails.length > 0 && (
+                <span className="ml-2 text-sm">
+                  {selectedEmails.length} selected
+                </span>
+              )}
+            </div>
+          </div>
 
-          {/* Ticket Items */}
-          <List sx={{ p: 0 }}>
-            {tickets.map((ticket, index) => (
-              <React.Fragment key={ticket._id}>
-                <ListItem 
-                  sx={{ 
-                    py: 2, 
-                    px: 2,
-                    '&:hover': { backgroundColor: 'grey.50' }
-                  }}
-                >
-                  <ListItemIcon sx={{ minWidth: 'auto', mr: 2 }}>
-                    <Checkbox
-                      checked={selectedTickets.includes(ticket._id)}
-                      onChange={() => handleSelectTicket(ticket._id)}
-                      size="small"
-                    />
-                  </ListItemIcon>
+          {/* Email Items */}
+          <div className="divide-y">
+            {emails.map((email) => (
+              <div
+                key={email._id}
+                className="p-4 hover:bg-slate-50"
+              >
+                <div className="flex items-center">
+                  <Checkbox
+                    checked={selectedEmails.includes(email._id)}
+                    onCheckedChange={() => handleSelectEmail(email._id)}
+                    className="mr-4"
+                  />
 
-                  <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                  <div className="flex items-center flex-1">
                     {/* Avatar */}
-                    <Avatar 
-                      sx={{ 
-                        bgcolor: generateAvatarColor(ticket.subject || ticket.to),
-                        width: 32,
-                        height: 32,
-                        mr: 2,
-                        fontSize: '14px'
-                      }}
-                    >
-                      {getInitials(ticket.subject || ticket.to || 'Ticket')}
+                    <Avatar className={`h-8 w-8 mr-4 ${generateAvatarColor(email.subject || email.to)}`}>
+                      <span className="text-xs">
+                        {getInitials(email.subject || email.to || 'Email')}
+                      </span>
                     </Avatar>
 
-                    {/* Ticket Details */}
-                    <Box sx={{ flex: 1 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
-                        <Typography variant="subtitle2" sx={{ fontWeight: 600, mr: 1 }}>
-                          {ticket.subject || 'No Subject'}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          #{ticket._id?.slice(-6) || 'N/A'}
-                        </Typography>
-                      </Box>
+                    {/* Email Details */}
+                    <div className="flex-1">
+                      <div className="flex items-center mb-1">
+                        <h3 className="font-medium mr-2">
+                          {email.subject || 'No Subject'}
+                        </h3>
+                        <span className="text-sm text-slate-500">
+                          #{email._id?.slice(-6) || 'N/A'}
+                        </span>
+                      </div>
 
-                      <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
-                        <Person sx={{ fontSize: 14, color: 'text.secondary' }} />
-                        <Typography variant="caption" color="text.secondary">
-                          From: {ticket.from || 'Unknown'}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          • To: {ticket.to || 'Unknown'}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          • Created: {formatDate(ticket.createdAt)}
-                        </Typography>
-                        {ticket.updatedAt && (
-                          <Typography variant="caption" color="text.secondary">
-                            • Updated: {formatDate(ticket.updatedAt)}
-                          </Typography>
+                      <div className="flex items-center flex-wrap gap-2 text-sm text-slate-500">
+                        <User className="h-4 w-4" />
+                        <span>From: {email.from || 'Unknown'}</span>
+                        <span>• To: {email.to || 'Unknown'}</span>
+                        <span>• Created: {formatDate(email.createdAt)}</span>
+                        {email.updatedAt && (
+                          <span>• Updated: {formatDate(email.updatedAt)}</span>
                         )}
-                      </Box>
+                      </div>
 
                       {/* Tags */}
-                      {ticket.tags && ticket.tags.length > 0 && (
-                        <Box sx={{ mt: 0.5, display: 'flex', gap: 0.5 }}>
-                          {ticket.tags.map((tag, i) => (
-                            <Chip 
-                              key={i}
-                              label={tag}
-                              size="small"
-                              sx={{ fontSize: '10px', height: 20 }}
-                            />
+                      {email.tags && email.tags.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {email.tags.map((tag, i) => (
+                            <Badge key={i} variant="outline" className="text-xs">
+                              {tag}
+                            </Badge>
                           ))}
-                        </Box>
+                        </div>
                       )}
-                    </Box>
+                    </div>
 
                     {/* Status and Actions */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <div className="flex items-center gap-4">
                       {/* Priority */}
-                      <FormControl size="small" sx={{ minWidth: 80 }}>
-                        <Select
-                          value={ticket.priority || 'Low'}
-                          onChange={(e) => updateTicketField(ticket._id, 'priority', e.target.value)}
-                          disabled={updatingTicket === ticket._id}
-                          sx={{ 
-                            fontSize: '12px',
-                            '& .MuiSelect-select': {
-                              py: 0.5,
-                              color: getPriorityColor(ticket.priority)
-                            }
-                          }}
-                        >
-                          <MenuItem value="Low">Low</MenuItem>
-                          <MenuItem value="Medium">Medium</MenuItem>
-                          <MenuItem value="High">High</MenuItem>
-                          <MenuItem value="Urgent">Urgent</MenuItem>
-                        </Select>
-                      </FormControl>
+                      <Select
+                        value={email.priority || 'Low'}
+                        onValueChange={(value) => updateEmailField(email._id, 'priority', value)}
+                        disabled={updatingEmail === email._id}
+                      >
+                        <SelectTrigger className="w-[100px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Low">Low</SelectItem>
+                          <SelectItem value="Medium">Medium</SelectItem>
+                          <SelectItem value="High">High</SelectItem>
+                          <SelectItem value="Urgent">Urgent</SelectItem>
+                        </SelectContent>
+                      </Select>
 
                       {/* Status */}
-                      <FormControl size="small" sx={{ minWidth: 80 }}>
-                        <Select
-                          value={ticket.status || 'Open'}
-                          onChange={(e) => updateTicketField(ticket._id, 'status', e.target.value)}
-                          disabled={updatingTicket === ticket._id}
-                          sx={{ 
-                            fontSize: '12px',
-                            '& .MuiSelect-select': {
-                              py: 0.5,
-                              color: getStatusColor(ticket.status)
-                            }
-                          }}
-                        >
-                          <MenuItem value="Open">Open</MenuItem>
-                          <MenuItem value="Pending">Pending</MenuItem>
-                          <MenuItem value="Closed">Closed</MenuItem>
-                        </Select>
-                      </FormControl>
+                      <Select
+                        value={email.status || 'Open'}
+                        onValueChange={(value) => updateEmailField(email._id, 'status', value)}
+                        disabled={updatingEmail === email._id}
+                      >
+                        <SelectTrigger className="w-[100px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Open">Open</SelectItem>
+                          <SelectItem value="Pending">Pending</SelectItem>
+                          <SelectItem value="Closed">Closed</SelectItem>
+                        </SelectContent>
+                      </Select>
 
                       {/* Action Buttons */}
-                      <Box sx={{ display: 'flex', gap: 1 }}>
-                        <IconButton 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEditClick(ticket);
-                          }}
+                      <div className="flex gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleEditClick(email)}
                           disabled={actionLoading}
-                          size="small"
                         >
-                          <Edit fontSize="small" />
-                        </IconButton>
-                        <IconButton 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteClick(ticket);
-                          }}
+                          <PencilLine className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDeleteClick(email)}
                           disabled={actionLoading}
-                          size="small"
-                          color="error"
+                          className="text-red-500 hover:text-red-600"
                         >
-                          <Delete fontSize="small" />
-                        </IconButton>
-                      </Box>
-                    </Box>
-                  </Box>
-                </ListItem>
-                {index < tickets.length - 1 && <Divider />}
-              </React.Fragment>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             ))}
-          </List>
-        </Paper>
+          </div>
+        </Card>
       )}
 
       {/* Delete Confirmation Dialog */}
-      <Dialog 
-        open={confirmDelete} 
-        onClose={handleCancelDelete}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Confirm Delete</DialogTitle>
+      <Dialog open={confirmDelete} onOpenChange={setConfirmDelete}>
         <DialogContent>
-          <DialogContentText>
-            Are you sure you want to delete ticket <strong>{ticketToDelete?.subject || 'this ticket'}</strong>? 
-            This action cannot be undone and will permanently remove the ticket and all associated data.
-          </DialogContentText>
+          <DialogHeader>
+            <DialogTitle>Confirm Delete</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete email <strong>{emailToDelete?.subject || 'this email'}</strong>? 
+              This action cannot be undone and will permanently remove the email and all associated data.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={handleCancelDelete}
+              disabled={actionLoading}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleConfirmDelete}
+              disabled={actionLoading}
+            >
+              {actionLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                'Delete'
+              )}
+            </Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button 
-            onClick={handleCancelDelete}
-            disabled={actionLoading}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleConfirmDelete}
-            color="error"
-            variant="contained"
-            disabled={actionLoading}
-            startIcon={actionLoading ? <CircularProgress size={16} /> : null}
-          >
-            {actionLoading ? 'Deleting...' : 'Delete'}
-          </Button>
-        </DialogActions>
       </Dialog>
 
-      {/* Snackbar Notification */}
-      <Snackbar
-        open={notification.show}
-        autoHideDuration={4000}
-        onClose={handleCloseNotification}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      >
+      {/* Notification */}
+      {notification.show && (
         <Alert
-          severity={notification.type}
-          onClose={handleCloseNotification}
-          sx={{ width: '100%' }}
+          variant={notification.type}
+          className="fixed top-4 right-4 max-w-md z-50"
+          onClose={() => setNotification({ ...notification, show: false })}
         >
-          {notification.message}
+          <AlertDescription>{notification.message}</AlertDescription>
         </Alert>
-      </Snackbar>
-    </Box>
+      )}
+    </div>
   );
 };
 
-export default SupportTicketList;
+export default EmailList;

@@ -4,46 +4,30 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../contexts/AuthContext';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Box,
-  Button,
-  IconButton,
-  Badge,
-  Menu,
-  MenuItem,
-  TextField,
-  InputAdornment,
-  Avatar,
-  Chip
-} from '@mui/material';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import { Input } from './ui/input';
+import { Button } from './ui/button';
+import { Card } from './ui/card';
+import { cn } from '@/lib/utils';
 import {
   Search,
-  Notifications,
-  Add,
-  Description,
+  Bell,
+  Plus,
+  FileText,
   Settings,
-  AccountCircle,
-  ExpandMore,ConfirmationNumber,
-  Email,
-  Person,
-  Business,
-  PersonOutline,
-  Logout
-} from '@mui/icons-material';
+  User,
+  ChevronDown,
+  Ticket,
+  Mail,
+  Building2,
+  UserPlus,
+  LogOut
+} from 'lucide-react';
 
 const Navbar = () => {
   const pathname = usePathname();
   const { logout, user } = useAuth();
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [userMenuAnchor, setUserMenuAnchor] = useState(null);
   const router = useRouter();
-
-  const [newMenuAnchor, setNewMenuAnchor] = useState(null);
-const handleNewClick = (event) => setNewMenuAnchor(event.currentTarget);
-const handleNewClose = () => setNewMenuAnchor(null);
 
   // Function to get page title based on pathname
   const getPageTitle = () => {
@@ -59,7 +43,8 @@ const handleNewClose = () => setNewMenuAnchor(null);
       '/groups/create': 'Create Group',
       '/company': 'Companies',
       '/company/create': 'Create Company',
-  
+      '/Email': 'Emails',
+      '/Email/create': 'Create Email',
       '/admin': 'Admin',
       '/apps': 'Apps',
     };
@@ -71,251 +56,165 @@ const handleNewClose = () => setNewMenuAnchor(null);
     if (pathname.includes('/agents/edit/')) return 'Edit Agent';
     if (pathname.includes('/groups/edit/')) return 'Edit Group';
     if (pathname.includes('/company/edit/')) return 'Edit Company';
+    if (pathname.includes('/Email/edit/')) return 'Edit Email';
     
     return pageTitles[pathname] || 'Dashboard';
   };
 
-  const handleRecommendedClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleUserMenuClick = (event) => {
-    setUserMenuAnchor(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-    setUserMenuAnchor(null);
-  };
-
-  const handleLogout = () => {
-    logout();
-    handleClose();
+  const handleNavigation = (path) => {
+    console.log('Navigating to:', path); // Debug log
+    router.push(path);
   };
 
   return (
-    <AppBar
-      position="static"
-      elevation={0}
-      sx={{
-        backgroundColor: 'white',
-        borderBottom: '1px solid #e5e7eb',
-        color: '#1f2937',
-        height: '64px',
-      }}
-    >
-      <Toolbar sx={{ justifyContent: 'space-between', height: '100%' }}>
+    <Card className="sticky top-0 z-30 border-b rounded-none bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+      <div className="flex h-16 items-center px-4 justify-between">
         {/* Left side - Page title */}
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Typography
-            variant="h5"
-            component="h1"
-            sx={{
-              fontWeight: 600,
-              color: '#1f2937',
-            }}
-          >
+        <div className="flex items-center">
+          <h1 className="text-2xl font-semibold text-slate-900">
             {getPageTitle()}
-          </Typography>
-        </Box>
+          </h1>
+        </div>
 
         {/* Right side - Actions and user menu */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <div className="flex items-center space-x-4">
           {/* Trial notice */}
-          <Typography variant="body2" sx={{ color: '#6b7280' }}>
+          <span className="text-sm text-slate-500">
             Your trial ends in{' '}
-            <Typography component="span" sx={{ fontWeight: 600 }}>
-              14 days
-            </Typography>
-          </Typography>
+            <span className="font-semibold">14 days</span>
+          </span>
 
           {/* Subscribe button */}
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: '#2563eb',
-              '&:hover': { backgroundColor: '#1d4ed8' },
-              textTransform: 'none',
-              fontWeight: 600,
-            }}
-          >
+          <Button variant="default">
             Subscribe
           </Button>
 
           {/* Recommended features */}
-          <Box sx={{ position: 'relative' }}>
-            <Button
-              variant="text"
-              endIcon={<ExpandMore />}
-              onClick={handleRecommendedClick}
-              sx={{
-                color: '#6b7280',
-                textTransform: 'none',
-                '&:hover': { color: '#1f2937' },
-              }}
-            >
-              Recommended features
-              <Badge
-                badgeContent={1}
-                color="error"
-                sx={{
-                  '& .MuiBadge-badge': {
-                    right: -8,
-                    top: -8,
-                  },
-                }}
-              />
-            </Button>
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleClose}
-              PaperProps={{
-                sx: { minWidth: 200 },
-              }}
-            >
-              <MenuItem onClick={handleClose}>Feature 1</MenuItem>
-              <MenuItem onClick={handleClose}>Feature 2</MenuItem>
-            </Menu>
-          </Box>
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger asChild>
+              <Button variant="ghost" className="relative">
+                Recommended features
+                <ChevronDown className="ml-1 h-4 w-4" />
+                <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-red-500" />
+              </Button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content className="w-48 rounded-md border bg-white p-1 shadow-md" sideOffset={5}>
+                <DropdownMenu.Item className="flex cursor-pointer items-center rounded-sm px-2 py-2 text-sm outline-none hover:bg-slate-100">
+                  Feature 1
+                </DropdownMenu.Item>
+                <DropdownMenu.Item className="flex cursor-pointer items-center rounded-sm px-2 py-2 text-sm outline-none hover:bg-slate-100">
+                  Feature 2
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Root>
 
           {/* New button */}
-         
-          <Box sx={{ position: 'relative' }}>
-  <Button
-    variant="contained"
-    startIcon={<Add />}
-    endIcon={<ExpandMore />}
-    onClick={handleNewClick}
-    sx={{
-      backgroundColor: '#059669',
-      '&:hover': { backgroundColor: '#047857' },
-      textTransform: 'none',
-      fontWeight: 600,
-    }}
-  >
-    New
-  </Button>
-   <Menu
-    anchorEl={newMenuAnchor}
-    open={Boolean(newMenuAnchor)}
-    onClose={handleNewClose}
-    PaperProps={{ sx: { minWidth: 180 } }}
-  >
-    <MenuItem onClick={() => { handleNewClose(); router.push('/tickets/create'); }}>
-      <ConfirmationNumber fontSize="small" sx={{ mr: 1 }} /> Ticket
-    </MenuItem>
-    <MenuItem onClick={() => { handleNewClose(); router.push('/Email/create'); }}>
-      <Email fontSize="small" sx={{ mr: 1 }} /> Email
-    </MenuItem>
-    <MenuItem onClick={() => { handleNewClose(); router.push('/contacts/create'); }}>
-      <Person fontSize="small" sx={{ mr: 1 }} /> Contact
-    </MenuItem>
-    <MenuItem onClick={() => { handleNewClose(); router.push('/company/create'); }}>
-      <Business fontSize="small" sx={{ mr: 1 }} /> Company
-    </MenuItem>
-    <MenuItem onClick={() => { handleNewClose(); router.push('/agents/create'); }}>
-      <PersonOutline fontSize="small" sx={{ mr: 1 }} /> Agent
-    </MenuItem>
-  </Menu>
-</Box>
-        
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger asChild>
+              <Button className="bg-emerald-600 hover:bg-emerald-700">
+                <Plus className="mr-1 h-4 w-4" />
+                New
+                <ChevronDown className="ml-1 h-4 w-4" />
+              </Button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content className="w-48 rounded-md border bg-white p-1 shadow-md" sideOffset={5}>
+                <DropdownMenu.Item 
+                  className="flex cursor-pointer items-center rounded-sm px-2 py-2 text-sm outline-none hover:bg-slate-100"
+                  onClick={() => handleNavigation('/tickets/create')}
+                >
+                  <Ticket className="mr-2 h-4 w-4" />
+                  Ticket
+                </DropdownMenu.Item>
+                <DropdownMenu.Item 
+                  className="flex cursor-pointer items-center rounded-sm px-2 py-2 text-sm outline-none hover:bg-slate-100"
+                  onClick={() => handleNavigation('/Email/create')}
+                >
+                  <Mail className="mr-2 h-4 w-4" />
+                  Email
+                </DropdownMenu.Item>
+                <DropdownMenu.Item 
+                  className="flex cursor-pointer items-center rounded-sm px-2 py-2 text-sm outline-none hover:bg-slate-100"
+                  onClick={() => handleNavigation('/contacts/create')}
+                >
+                  <User className="mr-2 h-4 w-4" />
+                  Contact
+                </DropdownMenu.Item>
+                <DropdownMenu.Item 
+                  className="flex cursor-pointer items-center rounded-sm px-2 py-2 text-sm outline-none hover:bg-slate-100"
+                  onClick={() => handleNavigation('/company/create')}
+                >
+                  <Building2 className="mr-2 h-4 w-4" />
+                  Company
+                </DropdownMenu.Item>
+                <DropdownMenu.Item 
+                  className="flex cursor-pointer items-center rounded-sm px-2 py-2 text-sm outline-none hover:bg-slate-100"
+                  onClick={() => handleNavigation('/agents/create')}
+                >
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  Agent
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Root>
 
           {/* Search */}
-          <TextField
-            size="small"
-            placeholder="Search"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search sx={{ color: '#9ca3af' }} />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                backgroundColor: '#f9fafb',
-                '&:hover': {
-                  backgroundColor: '#f3f4f6',
-                },
-                '&.Mui-focused': {
-                  backgroundColor: 'white',
-                },
-              },
-            }}
-          />
+          <div className="relative">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-slate-400" />
+            <Input
+              placeholder="Search"
+              className="pl-8 bg-slate-50 hover:bg-slate-100 focus:bg-white w-64"
+            />
+          </div>
 
-          {/* Notifications */}
-          <IconButton
-            sx={{
-              color: '#6b7280',
-              '&:hover': { color: '#1f2937' },
-            }}
-          >
-            <Badge badgeContent={1} color="error">
-              <Notifications />
-            </Badge>
-          </IconButton>
+          {/* Action buttons */}
+          <Button variant="ghost" size="icon" className="relative">
+            <Bell className="h-5 w-5" />
+            <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-red-500" />
+          </Button>
 
-          {/* Additional action buttons */}
-          <IconButton
-            sx={{
-              color: '#6b7280',
-              '&:hover': { color: '#1f2937' },
-            }}
-          >
-            <Description />
-          </IconButton>
+          <Button variant="ghost" size="icon">
+            <FileText className="h-5 w-5" />
+          </Button>
 
-          <IconButton
-            sx={{
-              color: '#6b7280',
-              '&:hover': { color: '#1f2937' },
-            }}
-          >
-            <Settings />
-          </IconButton>
+          <Button variant="ghost" size="icon">
+            <Settings className="h-5 w-5" />
+          </Button>
 
           {/* User menu */}
-          <Box sx={{ position: 'relative' }}>
-            <IconButton onClick={handleUserMenuClick}>
-              <Avatar
-                sx={{
-                  bgcolor: '#f97316',
-                  width: 32,
-                  height: 32,
-                  fontSize: '14px',
-                  fontWeight: 600,
-                }}
-              >
-                {user?.firstName ? user.firstName.charAt(0).toUpperCase() : 'U'}
-              </Avatar>
-            </IconButton>
-            <Menu
-              anchorEl={userMenuAnchor}
-              open={Boolean(userMenuAnchor)}
-              onClose={handleClose}
-              PaperProps={{
-                sx: { minWidth: 180 },
-              }}
-            >
-              <MenuItem onClick={handleClose}>
-                <AccountCircle sx={{ mr: 1 }} />
-                Profile
-              </MenuItem>
-              <MenuItem onClick={handleClose}>
-                <Settings sx={{ mr: 1 }} />
-                Settings
-              </MenuItem>
-              <MenuItem onClick={handleLogout}>
-                <Logout sx={{ mr: 1 }} />
-                Sign out
-              </MenuItem>
-            </Menu>
-          </Box>
-        </Box>
-      </Toolbar>
-    </AppBar>
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger asChild>
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <div className="flex h-full w-full items-center justify-center rounded-full bg-orange-500 text-sm font-semibold text-white">
+                  {user?.firstName ? user.firstName.charAt(0).toUpperCase() : 'U'}
+                </div>
+              </Button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content className="w-48 rounded-md border bg-white p-1 shadow-md" sideOffset={5}>
+                <DropdownMenu.Item className="flex cursor-pointer items-center rounded-sm px-2 py-2 text-sm outline-none hover:bg-slate-100">
+                  <User className="mr-2 h-4 w-4" />
+                  Profile
+                </DropdownMenu.Item>
+                <DropdownMenu.Item className="flex cursor-pointer items-center rounded-sm px-2 py-2 text-sm outline-none hover:bg-slate-100">
+                  <Settings className="mr-2 h-4 w-4" />
+                  Settings
+                </DropdownMenu.Item>
+                <DropdownMenu.Item 
+                  className="flex cursor-pointer items-center rounded-sm px-2 py-2 text-sm outline-none hover:bg-slate-100"
+                  onClick={logout}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sign out
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Root>
+        </div>
+      </div>
+    </Card>
   );
 };
 

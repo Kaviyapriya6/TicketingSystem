@@ -1,27 +1,38 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { Input } from './ui/input';
+import { Button } from './ui/button';
+import { Label } from './ui/label';
+import { Textarea } from './ui/textarea';
+import { Alert, AlertDescription } from './ui/alert';
+import { Card } from './ui/card';
 import {
-  Box, TextField, Button, Typography, Avatar, Paper, Grid, Alert, MenuItem,
-  FormControl, InputLabel, Select, IconButton, Chip, RadioGroup, FormControlLabel,
-  Radio, FormLabel, Autocomplete, Card, CardContent, Divider, Stack, Container
-} from '@mui/material';
-import { 
-  PhotoCamera, 
-  Delete, 
-  Info, 
-  Person, 
-  Email, 
-  Language, 
-  Schedule, 
-  Settings, 
-  Group, 
-  Add 
-} from '@mui/icons-material';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select';
+import {
+  Camera,
+  Trash2,
+  Info,
+  User,
+  Mail,
+  Globe,
+  Clock,
+  Settings,
+  Users,
+  Plus
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const AgentForm = ({ onSubmit, initialData = {}, isEdit = false }) => {
   const router = useRouter();
   const [imagePreview, setImagePreview] = useState(initialData.profileImage || null);
-  const [currentRole, setCurrentRole] = useState('');
+  const [currentRole, setCurrentRole] = useState('none');
   const [serverError, setServerError] = useState('');
   const [availableGroups, setAvailableGroups] = useState([]);
   const [loadingGroups, setLoadingGroups] = useState(true);
@@ -35,7 +46,7 @@ const AgentForm = ({ onSubmit, initialData = {}, isEdit = false }) => {
     signature: initialData.signature || '',
     roles: initialData.roles || ['Agent'],
     ticketVisibility: initialData.ticketVisibility || 'all',
-    group: initialData.groups && initialData.groups.length > 0 ? initialData.groups[0] : '',
+    group: initialData.groups && initialData.groups.length > 0 ? initialData.groups[0] : 'none',
   });
 
   const agentTypes = [
@@ -132,7 +143,7 @@ const AgentForm = ({ onSubmit, initialData = {}, isEdit = false }) => {
     try {
       const submitData = {
         ...formData,
-        groups: formData.group ? [formData.group] : []
+        groups: formData.group !== 'none' ? [formData.group] : []
       };
       delete submitData.group;
       
@@ -143,399 +154,378 @@ const AgentForm = ({ onSubmit, initialData = {}, isEdit = false }) => {
   };
 
   return (
-    <Container 
-      maxWidth={false} 
-      sx={{ 
-        minHeight: '100vh',
-        bgcolor: '#f5f5f5',
-        py: 3,
-        px: 2
-      }}
-    >
-      <Box sx={{ width: '100%', height: '100%' }}>
+    <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="w-full">
         {/* Header */}
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" component="h1" gutterBottom sx={{ 
-            fontWeight: 600, 
-            color: '#333',
-            mb: 1
-          }}>
+        <div className="mb-8">
+          <h1 className="text-3xl font-semibold text-gray-900 mb-2">
             {isEdit ? 'Edit Agent' : 'Create New Agent'}
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
+          </h1>
+          <p className="text-gray-600">
             {isEdit ? 'Update agent information and permissions' : 'Add a new agent to your team'}
-          </Typography>
-        </Box>
+          </p>
+        </div>
 
         <form>
-          {/* Horizontal Layout - Two Column Structure */}
-          <Grid container spacing={4}>
+          {/* Two Column Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Left Column */}
-            <Grid item xs={12} lg={6}>
-              <Stack spacing={4}>
-                {/* Basic Information */}
-                <Paper sx={{ p: 3 }}>
-                  <Typography variant="h6" sx={{ mb: 3, color: '#333', fontWeight: 600 }}>
-                    Basic Information
-                  </Typography>
-                  
-                  <Grid container spacing={3}>
-                    <Grid item xs={12}>
-                      <FormControl fullWidth>
-                        <InputLabel>Agent Type *</InputLabel>
-                        <Select
-                          value={formData.agentType}
-                          onChange={(e) => handleInputChange('agentType', e.target.value)}
-                          label="Agent Type *"
-                        >
-                          {agentTypes.map((type) => (
-                            <MenuItem key={type.value} value={type.value}>
-                              {type.label}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
+            <div className="space-y-8">
+              {/* Basic Information */}
+              <Card className="p-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                  Basic Information
+                </h2>
+                
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <Label>Agent Type *</Label>
+                    <Select
+                      value={formData.agentType}
+                      onValueChange={(value) => handleInputChange('agentType', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select agent type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {agentTypes.map((type) => (
+                          <SelectItem key={type.value} value={type.value}>
+                            {type.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        label="Email Address *"
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => handleInputChange('email', e.target.value)}
-                        placeholder="agent@company.com"
-                      />
-                    </Grid>
+                  <div className="space-y-2">
+                    <Label>Email Address *</Label>
+                    <Input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      placeholder="agent@company.com"
+                    />
+                  </div>
 
-                    <Grid item xs={12} sm={6}>
-                      <FormControl fullWidth>
-                        <InputLabel>Timezone *</InputLabel>
-                        <Select
-                          value={formData.timezone}
-                          onChange={(e) => handleInputChange('timezone', e.target.value)}
-                          label="Timezone *"
-                        >
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Timezone *</Label>
+                      <Select
+                        value={formData.timezone}
+                        onValueChange={(value) => handleInputChange('timezone', value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select timezone" />
+                        </SelectTrigger>
+                        <SelectContent>
                           {timezones.map((tz) => (
-                            <MenuItem key={tz.value} value={tz.value}>
+                            <SelectItem key={tz.value} value={tz.value}>
                               {tz.label}
-                            </MenuItem>
+                            </SelectItem>
                           ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                    <Grid item xs={12} sm={6}>
-                      <FormControl fullWidth>
-                        <InputLabel>Language *</InputLabel>
-                        <Select
-                          value={formData.language}
-                          onChange={(e) => handleInputChange('language', e.target.value)}
-                          label="Language *"
-                        >
+                    <div className="space-y-2">
+                      <Label>Language *</Label>
+                      <Select
+                        value={formData.language}
+                        onValueChange={(value) => handleInputChange('language', value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select language" />
+                        </SelectTrigger>
+                        <SelectContent>
                           {languages.map((lang) => (
-                            <MenuItem key={lang.value} value={lang.value}>
+                            <SelectItem key={lang.value} value={lang.value}>
                               {lang.label}
-                            </MenuItem>
+                            </SelectItem>
                           ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                  </Grid>
-                </Paper>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+              </Card>
 
-                {/* Work Type & Profile Photo */}
-                <Paper sx={{ p: 3 }}>
-                  <Typography variant="h6" sx={{ mb: 3, color: '#333', fontWeight: 600 }}>
-                    Work Configuration
-                  </Typography>
-                  
-                  <Grid container spacing={3}>
-                    <Grid item xs={12}>
-                      <FormControl component="fieldset">
-                        <FormLabel component="legend" sx={{ mb: 1, color: '#333' }}>Work Type *</FormLabel>
-                        <RadioGroup
-                          value={formData.workType}
+              {/* Work Type & Profile Photo */}
+              <Card className="p-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                  Work Configuration
+                </h2>
+                
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <Label>Work Type *</Label>
+                    <div className="space-y-2">
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          value="fulltime"
+                          checked={formData.workType === 'fulltime'}
                           onChange={(e) => handleInputChange('workType', e.target.value)}
-                        >
-                          <FormControlLabel
-                            value="fulltime"
-                            control={<Radio />}
-                            label="Full Time (8 seats available)"
-                          />
-                          <FormControlLabel
-                            value="occasional"
-                            control={<Radio />}
-                            label="Occasional (3 day passes)"
-                          />
-                        </RadioGroup>
-                      </FormControl>
-                    </Grid>
+                          className="form-radio"
+                        />
+                        <span>Full Time (8 seats available)</span>
+                      </label>
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          value="occasional"
+                          checked={formData.workType === 'occasional'}
+                          onChange={(e) => handleInputChange('workType', e.target.value)}
+                          className="form-radio"
+                        />
+                        <span>Occasional (3 day passes)</span>
+                      </label>
+                    </div>
+                  </div>
 
-                    <Grid item xs={12}>
-                      <Box>
-                        <Typography variant="body2" sx={{ mb: 2, color: '#666', fontWeight: 500 }}>
-                          Profile Photo
-                        </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                          <Avatar 
-                            src={imagePreview} 
-                            sx={{ 
-                              width: 64, 
-                              height: 64,
-                              bgcolor: '#e0e0e0'
-                            }}
+                  <div className="space-y-2">
+                    <Label>Profile Photo</Label>
+                    <div className="flex items-center space-x-4">
+                      <div className={cn(
+                        "w-16 h-16 rounded-full flex items-center justify-center bg-gray-200",
+                        imagePreview ? "overflow-hidden" : ""
+                      )}>
+                        {imagePreview ? (
+                          <img src={imagePreview} alt="Profile" className="w-full h-full object-cover" />
+                        ) : (
+                          <User className="w-8 h-8 text-gray-400" />
+                        )}
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          accept="image/*"
+                          className="hidden"
+                          id="profile-image-upload"
+                          type="file"
+                          onChange={handleImageUpload}
+                        />
+                        <label htmlFor="profile-image-upload">
+                          <Button variant="outline" size="sm" asChild>
+                            <span>
+                              <Camera className="w-4 h-4 mr-2" />
+                              Upload
+                            </span>
+                          </Button>
+                        </label>
+                        {imagePreview && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleRemoveImage}
+                            className="text-red-600 hover:text-red-700"
                           >
-                            {formData.email ? formData.email.charAt(0).toUpperCase() : <Person />}
-                          </Avatar>
-                          <Box>
-                            <input
-                              accept="image/*"
-                              style={{ display: 'none' }}
-                              id="profile-image-upload"
-                              type="file"
-                              onChange={handleImageUpload}
-                            />
-                            <label htmlFor="profile-image-upload">
-                              <Button 
-                                variant="outlined" 
-                                component="span" 
-                                startIcon={<PhotoCamera />}
-                                size="small"
-                              >
-                                Upload
-                              </Button>
-                            </label>
-                            {imagePreview && (
-                              <Button
-                                onClick={handleRemoveImage}
-                                size="small"
-                                sx={{ ml: 1, color: 'error.main' }}
-                              >
-                                Remove
-                              </Button>
-                            )}
-                          </Box>
-                        </Box>
-                      </Box>
-                    </Grid>
-                  </Grid>
-                </Paper>
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
 
-                {/* Email Signature */}
-                <Paper sx={{ p: 3 }}>
-                  <Typography variant="h6" sx={{ mb: 3, color: '#333', fontWeight: 600 }}>
-                    Email Signature
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    label="Email Signature"
-                    multiline
-                    rows={4}
-                    value={formData.signature}
-                    onChange={(e) => handleInputChange('signature', e.target.value)}
-                    placeholder="Enter agent's email signature..."
-                  />
-                </Paper>
-              </Stack>
-            </Grid>
+              {/* Email Signature */}
+              <Card className="p-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                  Email Signature
+                </h2>
+                <Textarea
+                  value={formData.signature}
+                  onChange={(e) => handleInputChange('signature', e.target.value)}
+                  placeholder="Enter agent's email signature..."
+                  rows={4}
+                />
+              </Card>
+            </div>
 
             {/* Right Column */}
-            <Grid item xs={12} lg={6}>
-              <Stack spacing={4}>
-                {/* Permissions & Access */}
-                <Paper sx={{ p: 3 }}>
-                  <Typography variant="h6" sx={{ mb: 3, color: '#333', fontWeight: 600 }}>
-                    Permissions & Access
-                  </Typography>
+            <div className="space-y-8">
+              {/* Permissions & Access */}
+              <Card className="p-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                  Permissions & Access
+                </h2>
 
-                  {/* Roles Section */}
-                  <Box sx={{ mb: 4 }}>
-                    <Typography variant="body1" sx={{ mb: 2, color: '#333', fontWeight: 500 }}>
-                      Roles
-                      <IconButton size="small" sx={{ ml: 1 }}>
-                        <Info fontSize="small" />
-                      </IconButton>
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
-                      Determines the features that an agent can access
-                    </Typography>
-                    
-                    <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'flex-end' }}>
-                      <Autocomplete
-                        sx={{ flexGrow: 1 }}
-                        options={availableRoles}
-                        value={currentRole}
-                        onChange={(event, newValue) => setCurrentRole(newValue || '')}
-                        renderInput={(params) => (
-                          <TextField 
-                            {...params} 
-                            label="Select a role"
-                            size="small"
-                          />
-                        )}
-                      />
-                      <Button 
-                        variant="outlined"
-                        onClick={handleAddRole}
-                        disabled={!currentRole.trim()}
-                        size="small"
-                        startIcon={<Add />}
-                      >
-                        Add
-                      </Button>
-                    </Box>
-                    
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                      {formData.roles.map((role) => (
-                        <Chip
-                          key={role}
-                          label={role}
-                          onDelete={() => handleRemoveRole(role)}
-                          variant="outlined"
-                        />
-                      ))}
-                    </Box>
-                  </Box>
-
-                  {/* Ticket Visibility */}
-                  <Box>
-                    <FormControl component="fieldset">
-                      <FormLabel component="legend" sx={{ mb: 2, color: '#333', fontWeight: 500 }}>
-                        Scope for ticket visibility
-                      </FormLabel>
-                      <RadioGroup
-                        value={formData.ticketVisibility}
-                        onChange={(e) => handleInputChange('ticketVisibility', e.target.value)}
-                      >
-                        <FormControlLabel
-                          value="all"
-                          control={<Radio />}
-                          label={
-                            <Box>
-                              <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                                All tickets
-                              </Typography>
-                              <Typography variant="caption" color="text.secondary">
-                                Can view and edit all tickets
-                              </Typography>
-                            </Box>
-                          }
-                        />
-                        <FormControlLabel
-                          value="group"
-                          control={<Radio />}
-                          label={
-                            <Box>
-                              <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                                Group tickets
-                              </Typography>
-                              <Typography variant="caption" color="text.secondary">
-                                Can view and edit tickets in their group(s) and assigned tickets
-                              </Typography>
-                            </Box>
-                          }
-                        />
-                        <FormControlLabel
-                          value="assigned"
-                          control={<Radio />}
-                          label={
-                            <Box>
-                              <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                                Assigned tickets
-                              </Typography>
-                              <Typography variant="caption" color="text.secondary">
-                                Can view and edit only tickets assigned to them
-                              </Typography>
-                            </Box>
-                          }
-                        />
-                      </RadioGroup>
-                    </FormControl>
-                  </Box>
-                </Paper>
-
-                {/* Groups */}
-                <Paper sx={{ p: 3 }}>
-                  <Typography variant="h6" sx={{ mb: 3, color: '#333', fontWeight: 600 }}>
-                    Group Assignment
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
-                    Assign agent to a group for better collaboration
-                  </Typography>
+                {/* Roles Section */}
+                <div className="mb-8">
+                  <div className="flex items-center mb-2">
+                    <h3 className="text-base font-medium text-gray-900">Roles</h3>
+                    <Button variant="ghost" size="sm" className="ml-2">
+                      <Info className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Determines the features that an agent can access
+                  </p>
                   
-                  {loadingGroups ? (
-                    <Box sx={{ py: 2 }}>
-                      <Typography variant="body2" color="text.secondary">
-                        Loading groups...
-                      </Typography>
-                    </Box>
-                  ) : availableGroups.length === 0 ? (
-                    <Box sx={{ 
-                      border: '1px dashed #ccc', 
-                      borderRadius: 1, 
-                      p: 3, 
-                      textAlign: 'center',
-                      bgcolor: '#fafafa'
-                    }}>
-                      <Group sx={{ fontSize: 40, color: '#bbb', mb: 1 }} />
-                      <Typography variant="body2" color="text.secondary">
-                        No groups available. Create groups from the Groups section to organize agents.
-                      </Typography>
-                    </Box>
-                  ) : (
-                    <FormControl fullWidth>
-                      <InputLabel>Select Group</InputLabel>
-                      <Select
-                        value={formData.group}
-                        onChange={(e) => handleInputChange('group', e.target.value)}
-                        label="Select Group"
-                      >
-                        <MenuItem value="">
-                          <em>No group assigned</em>
-                        </MenuItem>
-                        {availableGroups.map((group) => (
-                          <MenuItem key={group} value={group}>
-                            {group}
-                          </MenuItem>
+                  <div className="flex gap-2 mb-4">
+                    <Select
+                      value={currentRole}
+                      onValueChange={setCurrentRole}
+                    >
+                      <SelectTrigger className="flex-1">
+                        <SelectValue placeholder="Select a role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableRoles.map((role) => (
+                          <SelectItem key={role} value={role}>
+                            {role}
+                          </SelectItem>
                         ))}
-                      </Select>
-                    </FormControl>
-                  )}
-                </Paper>
-              </Stack>
-            </Grid>
-          </Grid>
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleAddRole}
+                      disabled={!currentRole.trim()}
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add
+                    </Button>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2">
+                    {formData.roles.map((role) => (
+                      <span
+                        key={role}
+                        className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-800"
+                      >
+                        {role}
+                        <button
+                          onClick={() => handleRemoveRole(role)}
+                          className="ml-2 text-gray-500 hover:text-gray-700"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Ticket Visibility */}
+                <div>
+                  <h3 className="text-base font-medium text-gray-900 mb-4">
+                    Scope for ticket visibility
+                  </h3>
+                  <div className="space-y-4">
+                    <label className="flex items-start space-x-2">
+                      <input
+                        type="radio"
+                        value="all"
+                        checked={formData.ticketVisibility === 'all'}
+                        onChange={(e) => handleInputChange('ticketVisibility', e.target.value)}
+                        className="mt-1"
+                      />
+                      <div>
+                        <p className="font-medium">All tickets</p>
+                        <p className="text-sm text-gray-600">Can view and edit all tickets</p>
+                      </div>
+                    </label>
+                    <label className="flex items-start space-x-2">
+                      <input
+                        type="radio"
+                        value="group"
+                        checked={formData.ticketVisibility === 'group'}
+                        onChange={(e) => handleInputChange('ticketVisibility', e.target.value)}
+                        className="mt-1"
+                      />
+                      <div>
+                        <p className="font-medium">Group tickets</p>
+                        <p className="text-sm text-gray-600">Can view and edit tickets in their group(s) and assigned tickets</p>
+                      </div>
+                    </label>
+                    <label className="flex items-start space-x-2">
+                      <input
+                        type="radio"
+                        value="assigned"
+                        checked={formData.ticketVisibility === 'assigned'}
+                        onChange={(e) => handleInputChange('ticketVisibility', e.target.value)}
+                        className="mt-1"
+                      />
+                      <div>
+                        <p className="font-medium">Assigned tickets</p>
+                        <p className="text-sm text-gray-600">Can view and edit only tickets assigned to them</p>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Groups */}
+              <Card className="p-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                  Group Assignment
+                </h2>
+                <p className="text-sm text-gray-600 mb-4">
+                  Assign agent to a group for better collaboration
+                </p>
+                
+                {loadingGroups ? (
+                  <div className="py-4">
+                    <p className="text-sm text-gray-600">Loading groups...</p>
+                  </div>
+                ) : availableGroups.length === 0 ? (
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center bg-gray-50">
+                    <Users className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                    <p className="text-sm text-gray-600">
+                      No groups available. Create groups from the Groups section to organize agents.
+                    </p>
+                  </div>
+                ) : (
+                  <Select
+                    value={formData.group}
+                    onValueChange={(value) => handleInputChange('group', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a group" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No group assigned</SelectItem>
+                      {availableGroups.map((group) => (
+                        <SelectItem key={group} value={group}>
+                          {group}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </Card>
+            </div>
+          </div>
 
           {/* Error Message */}
           {serverError && (
-            <Box sx={{ mt: 4 }}>
-              <Alert severity="error">
-                {serverError}
+            <div className="mt-8">
+              <Alert variant="destructive">
+                <AlertDescription>{serverError}</AlertDescription>
               </Alert>
-            </Box>
+            </div>
           )}
 
           {/* Action Buttons */}
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 4 }}>
+          <div className="flex justify-end gap-4 mt-8">
             <Button
-              variant="outlined"
-              size="large"
+              variant="outline"
+              size="lg"
               onClick={() => router.back()}
             >
               Cancel
             </Button>
             <Button
-              variant="contained"
-              size="large"
+              variant="default"
+              size="lg"
               onClick={handleSubmit}
             >
               {isEdit ? 'Update Agent' : 'Create Agent'}
             </Button>
-          </Box>
+          </div>
         </form>
-      </Box>
-    </Container>
+      </div>
+    </div>
   );
 };
 

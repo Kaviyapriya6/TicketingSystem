@@ -1,44 +1,43 @@
 "use client";
 
-
-
+import { useState, useMemo, useEffect } from 'react';
+import { Input } from './ui/input';
+import { Button } from './ui/button';
+import { Alert, AlertDescription } from './ui/alert';
 import {
-  Box,
-  Typography,
-  Button,
-  CircularProgress,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from './ui/dialog';
+import {
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
+  TableHeader,
   TableRow,
-  Paper,
-  Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  TextField,
-  InputAdornment,
-  FormControl,
-  InputLabel,
+} from './ui/table';
+import {
   Select,
-  MenuItem,
-  Chip,
-  Avatar,
-  IconButton
-} from '@mui/material';
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select';
+import { Card } from './ui/card';
 import { 
-  Edit as EditIcon, 
-  Add as AddIcon, 
-  Delete as DeleteIcon,
-  Visibility as ViewIcon,
-  Search as SearchIcon,
-  FilterList as FilterIcon
-} from '@mui/icons-material';
-import { useState, useMemo, useEffect } from 'react';
+  PencilIcon,
+  PlusIcon, 
+  TrashIcon,
+  EyeIcon,
+  SearchIcon,
+  SlidersHorizontalIcon,
+  Loader2Icon
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export default function DataTable({
   title,
@@ -121,61 +120,66 @@ export default function DataTable({
     // Inline agent assignment for assignedTo column
     if (column.field === 'assignedTo') {
       return (
-        <FormControl size="small" fullWidth>
-          <Select
-            multiple
-            value={Array.isArray(value) ? value : value ? [value] : []}
-            onChange={async (e) => {
-              const newAssigned = e.target.value;
-              await handleAssignAgent(item._id, newAssigned);
-              // Optionally, update UI optimistically
-              if (item.assignedTo) item.assignedTo = newAssigned;
-            }}
-            renderValue={(selected) =>
-              selected.length === 0
-                ? <em>-</em>
-                : selected.map(val => {
-                    const agent = agents.find(a => a.email === val || a._id === val);
-                    return agent ? agent.email : val;
-                  }).join(', ')
-            }
-            displayEmpty
-          >
-            <MenuItem disabled value="">
-              <em>Select agent(s)</em>
-            </MenuItem>
+        <Select
+          value={Array.isArray(value) ? value[0] : value}
+          onValueChange={async (newValue) => {
+            await handleAssignAgent(item._id, [newValue]);
+            // Optionally, update UI optimistically
+            if (item.assignedTo) item.assignedTo = [newValue];
+          }}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select agent" />
+          </SelectTrigger>
+          <SelectContent>
             {agents.map(agent => (
-              <MenuItem key={agent._id} value={agent.email}>
+              <SelectItem key={agent._id} value={agent.email}>
                 {agent.email}
-              </MenuItem>
+              </SelectItem>
             ))}
-          </Select>
-        </FormControl>
+          </SelectContent>
+        </Select>
       );
     }
     switch (column.type) {
       case 'avatar':
         return (
-          <Avatar src={value} sx={{ width: 32, height: 32 }}>
-            {column.fallback ? getNestedValue(item, column.fallback)?.charAt(0).toUpperCase() : '?'}
-          </Avatar>
+          <div className={cn(
+            "h-8 w-8 rounded-full flex items-center justify-center bg-gray-200 text-sm font-medium",
+            value ? "overflow-hidden" : ""
+          )}>
+            {value ? (
+              <img src={value} alt="Avatar" className="w-full h-full object-cover" />
+            ) : (
+              column.fallback ? getNestedValue(item, column.fallback)?.charAt(0).toUpperCase() : '?'
+            )}
+          </div>
         );
       case 'chips':
-        return value?.map((chipValue, index) => (
-          <Chip
-            key={`${item._id}-${column.field}-${index}`}
-            label={chipValue}
-            size="small"
-            sx={{ mr: 0.5, mb: 0.5 }}
-          />
-        ));
+        return (
+          <div className="flex flex-wrap gap-1">
+            {value?.map((chipValue, index) => (
+              <span
+                key={`${item._id}-${column.field}-${index}`}
+                className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-800"
+              >
+                {chipValue}
+              </span>
+            ))}
+          </div>
+        );
       case 'status':
         return (
-          <Chip
-            label={value}
-            size="small"
-            color={column.statusColors?.[value] || 'default'}
-          />
+          <span className={cn(
+            "inline-flex items-center px-2 py-1 rounded-full text-xs",
+            column.statusColors?.[value] === 'success' && "bg-green-100 text-green-800",
+            column.statusColors?.[value] === 'warning' && "bg-yellow-100 text-yellow-800",
+            column.statusColors?.[value] === 'error' && "bg-red-100 text-red-800",
+            column.statusColors?.[value] === 'info' && "bg-blue-100 text-blue-800",
+            !column.statusColors?.[value] && "bg-gray-100 text-gray-800"
+          )}>
+            {value}
+          </span>
         );
       case 'date':
         return value ? new Date(value).toLocaleDateString() : '';
@@ -214,189 +218,188 @@ export default function DataTable({
   };
 
   return (
-    <Box sx={{ p: 4 }}>
+    <div className="p-8">
       {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-        <Typography variant="h4" component="h1" sx={{ fontWeight: 600 }}>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-semibold text-gray-900">
           {title}
-        </Typography>
+        </h1>
         {onAdd && (
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={onAdd}
-            sx={{ textTransform: 'none' }}
-          >
+          <Button onClick={onAdd}>
+            <PlusIcon className="w-4 h-4 mr-2" />
             New {entityType}
           </Button>
         )}
-      </Box>
+      </div>
 
       {/* Search and Filters */}
-      <Box sx={{ mb: 3, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+      <div className="mb-6 flex flex-wrap gap-4 items-center">
         {/* Search */}
         {searchFields.length > 0 && (
-          <TextField
-            placeholder={`Search ${entityType}s...`}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            size="small"
-            sx={{ minWidth: 300 }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
+          <div className="relative flex-1 max-w-sm">
+            <SearchIcon className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder={`Search ${entityType}s...`}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9"
+            />
+          </div>
         )}
 
         {/* Filters */}
         {Object.entries(filterOptions).map(([filterKey, options]) => (
-          <FormControl key={filterKey} size="small" sx={{ minWidth: 150 }}>
-            <InputLabel>{options.label}</InputLabel>
-            <Select
-              value={filters[filterKey] || 'all'}
-              onChange={(e) => handleFilterChange(filterKey, e.target.value)}
-              label={options.label}
-            >
-              <MenuItem value="all">All {options.label}</MenuItem>
+          <Select
+            key={filterKey}
+            value={filters[filterKey] || 'all'}
+            onValueChange={(value) => handleFilterChange(filterKey, value)}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder={options.label} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All {options.label}</SelectItem>
               {options.values.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
+                <SelectItem key={option.value} value={option.value}>
                   {option.label}
-                </MenuItem>
+                </SelectItem>
               ))}
-            </Select>
-          </FormControl>
+            </SelectContent>
+          </Select>
         ))}
-      </Box>
+      </div>
 
       {/* Results count */}
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+      <p className="text-sm text-gray-500 mb-4">
         Showing {filteredData.length} of {data.length} {entityType}s
-      </Typography>
+      </p>
 
       {/* Error Alert */}
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
+        <Alert variant="destructive" className="mb-4">
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
       {/* Table */}
       {loading ? (
-        <Box display="flex" justifyContent="center" mt={4}>
-          <CircularProgress />
-        </Box>
+        <div className="flex justify-center items-center py-8">
+          <Loader2Icon className="h-8 w-8 animate-spin text-gray-400" />
+        </div>
       ) : (
-        <TableContainer component={Paper}>
+        <Card>
           <Table>
-            <TableHead>
+            <TableHeader>
               <TableRow>
                 {columns.map((column) => (
-                  <TableCell key={column.field}>{column.header}</TableCell>
+                  <TableHead key={column.field}>{column.header}</TableHead>
                 ))}
-                <TableCell align="right">Actions</TableCell>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            </TableHead>
+            </TableHeader>
             <TableBody>
               {filteredData.map((item) => (
                 <TableRow 
-                  key={item._id} 
-                  hover 
+                  key={item._id}
                   onClick={() => onView && onView(item._id)}
-                  sx={{ 
-                    cursor: onView ? 'pointer' : 'default',
-                    '&:hover': onView ? { backgroundColor: '#f5f5f5' } : {}
-                  }}
+                  className={onView ? "cursor-pointer" : ""}
                 >
                   {columns.map((column) => (
                     <TableCell key={column.field}>
                       {renderCellContent(item, column)}
                     </TableCell>
                   ))}
-                  <TableCell align="right">
-                    <Box 
-                      sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}
+                  <TableCell className="text-right">
+                    <div 
+                      className="flex justify-end gap-2"
                       onClick={(e) => e.stopPropagation()}
                     >
                       {showView && onView && (
-                        <IconButton
-                          size="small"
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => onView(item._id)}
-                          title="View"
                         >
-                          <ViewIcon />
-                        </IconButton>
+                          <EyeIcon className="h-4 w-4" />
+                        </Button>
                       )}
                       {onEdit && (
-                        <IconButton
-                          size="small"
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => onEdit(item._id)}
-                          title="Edit"
                         >
-                          <EditIcon />
-                        </IconButton>
+                          <PencilIcon className="h-4 w-4" />
+                        </Button>
                       )}
                       {onDelete && (
-                        <IconButton
-                          size="small"
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => handleDeleteClick(item)}
-                          title="Delete"
-                          color="error"
+                          className="text-red-600 hover:text-red-700"
                         >
-                          <DeleteIcon />
-                        </IconButton>
+                          <TrashIcon className="h-4 w-4" />
+                        </Button>
                       )}
-                    </Box>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
               {filteredData.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={columns.length + 1} align="center" sx={{ py: 4 }}>
-                    <Typography variant="h6" color="text.secondary">
+                  <TableCell colSpan={columns.length + 1} className="text-center py-8">
+                    <h3 className="text-lg font-medium text-gray-500">
                       {data.length === 0 ? `No ${entityType}s yet` : `No ${entityType}s match your search criteria`}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    </h3>
+                    <p className="text-sm text-gray-400 mt-1">
                       {data.length === 0 ? `Create your first ${entityType} to get started` : 'Try adjusting your search or filters'}
-                    </Typography>
+                    </p>
                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
-        </TableContainer>
+        </Card>
       )}
 
       {/* Delete Confirmation Dialog */}
-      <Dialog
-        open={deleteDialog.open}
-        onClose={handleDeleteCancel}
-        maxWidth="sm"
-      >
-        <DialogTitle>Delete {entityType}</DialogTitle>
+      <Dialog open={deleteDialog.open} onOpenChange={() => !deleting && handleDeleteCancel()}>
         <DialogContent>
-          <DialogContentText>
-            Are you sure you want to delete this {entityType}? This action cannot be undone.
-          </DialogContentText>
+          <DialogHeader>
+            <DialogTitle>Delete {entityType}</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this {entityType}? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={handleDeleteCancel}
+              disabled={deleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteConfirm}
+              disabled={deleting}
+            >
+              {deleting ? (
+                <>
+                  <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <TrashIcon className="mr-2 h-4 w-4" />
+                  Delete
+                </>
+              )}
+            </Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDeleteCancel} disabled={deleting}>
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleDeleteConfirm} 
-            color="error" 
-            variant="contained"
-            disabled={deleting}
-            startIcon={deleting ? <CircularProgress size={16} /> : <DeleteIcon />}
-          >
-            {deleting ? 'Deleting...' : 'Delete'}
-          </Button>
-        </DialogActions>
       </Dialog>
-    </Box>
+    </div>
   );
 }

@@ -3,185 +3,130 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
+import { Button } from './ui/button';
 import {
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Box,
-  Typography,
-  IconButton,
-  Avatar,
-  Divider,
-  Collapse
-} from '@mui/material';
-import {
-  Dashboard,
-  People,
-  ConfirmationNumber,
-  Assessment,
+  LayoutDashboard,
+  Users,
+  Ticket,
+  LineChart,
   Settings,
-  SmartToy,
-  MenuBook,
-  AdminPanelSettings,
-  Apps,
+  Bot,
+  BookOpen,
+  ShieldCheck,
+  AppWindow,
   ChevronLeft,
-  ChevronRight
-} from '@mui/icons-material';
+  ChevronRight,
+  Building2
+} from 'lucide-react';
 
 const Sidebar = ({ isCollapsed, onToggle }) => {
   const pathname = usePathname();
 
   const menuItems = [
-    { href: '/dashboard', icon: <Dashboard />, label: 'Dashboard' },
-    { href: '/contacts', icon: <People />, label: 'Contacts' },
-    { href: '/company', icon: <SmartToy />, label: 'Company' },
-    { href: '/tickets', icon: <ConfirmationNumber />, label: 'Tickets' },
-    // { href: '/reports', icon: <Assessment />, label: 'Reports' },
-    // { href: '/settings', icon: <Settings />, label: 'Settings' },
-    // { href: '/automation', icon: <SmartToy />, label: 'Automation' },
-    { href: '/solutions', icon: <MenuBook />, label: 'Solutions' },
-    { href: '/admin', icon: <AdminPanelSettings />, label: 'Admin' },
+    { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+    { href: '/contacts', icon: Users, label: 'Contacts' },
+    { href: '/company', icon: Building2, label: 'Company' },
+    { href: '/tickets', icon: Ticket, label: 'Tickets' },
+    // { href: '/reports', icon: LineChart, label: 'Reports' },
+    // { href: '/settings', icon: Settings, label: 'Settings' },
+    // { href: '/automation', icon: Bot, label: 'Automation' },
+    { href: '/solutions', icon: BookOpen, label: 'Solutions' },
+    { href: '/admin', icon: ShieldCheck, label: 'Admin' },
   ];
 
   const bottomMenuItems = [
-    { href: '/apps', icon: <Apps />, label: 'Apps' },
+    { href: '/apps', icon: AppWindow, label: 'Apps' },
   ];
 
-  const drawerWidth = isCollapsed ? 64 : 240;
-
   return (
-    <Drawer
-      variant="permanent"
-      sx={{
-        width: drawerWidth,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          width: drawerWidth,
-          boxSizing: 'border-box',
-          backgroundColor: '#1e293b',
-          color: 'white',
-          transition: 'width 0.3s ease',
-          overflowX: 'hidden',
-        },
-      }}
+    <div
+      className={cn(
+        "flex flex-col h-screen bg-slate-800 text-white transition-all duration-300 border-r border-slate-700",
+        isCollapsed ? "w-16" : "w-60"
+      )}
     >
       {/* Header */}
-      <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar
-            sx={{
-              bgcolor: '#2563eb',
-              width: 32,
-              height: 32,
-              fontSize: '14px',
-              fontWeight: 'bold'
-            }}
-          >
+      <div className="p-4 flex items-center justify-between">
+        <div className="flex items-center">
+          <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold">
             H
-          </Avatar>
+          </div>
           {!isCollapsed && (
-            <Typography variant="h6" sx={{ ml: 1, fontWeight: 600 }}>
+            <span className="ml-2 font-semibold text-lg truncate">
               Bizdesk
-            </Typography>
+            </span>
           )}
-        </Box>
-        <IconButton
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={onToggle}
-          sx={{
-            color: '#94a3b8',
-            '&:hover': { color: 'white' },
-            ...(isCollapsed && { ml: 'auto' })
-          }}
+          className={cn(
+            "text-slate-400 hover:text-white hover:bg-slate-700",
+            isCollapsed && "ml-auto"
+          )}
         >
-          {isCollapsed ? <ChevronRight /> : <ChevronLeft />}
-        </IconButton>
-      </Box>
+          {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+        </Button>
+      </div>
 
-      <Divider sx={{ borderColor: '#334155' }} />
+      <div className="h-px bg-slate-700" />
 
       {/* Main Menu */}
-      <Box sx={{ flexGrow: 1, py: 1 }}>
-        <List>
-          {menuItems.map((item) => (
-            <ListItem key={item.href} disablePadding>
-              <ListItemButton
-                component={Link}
+      <div className="flex-grow py-2 overflow-y-auto">
+        <nav className="space-y-1">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
                 href={item.href}
-                sx={{
-                  minHeight: 48,
-                  justifyContent: isCollapsed ? 'center' : 'initial',
-                  px: 2,
-                  py: 1.5,
-                  color: pathname === item.href ? 'white' : '#cbd5e1',
-                  backgroundColor: pathname === item.href ? '#2563eb' : 'transparent',
-                  borderRight: pathname === item.href ? '2px solid #60a5fa' : 'none',
-                  '&:hover': {
-                    backgroundColor: pathname === item.href ? '#2563eb' : '#334155',
-                    color: 'white',
-                  },
-                }}
+                className={cn(
+                  "flex items-center px-3 py-2 text-sm font-medium transition-colors",
+                  isCollapsed ? "justify-center" : "justify-start",
+                  isActive
+                    ? "bg-blue-600 text-white border-r-2 border-blue-400"
+                    : "text-slate-300 hover:bg-slate-700 hover:text-white"
+                )}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: isCollapsed ? 'auto' : 3,
-                    justifyContent: 'center',
-                    color: 'inherit',
-                  }}
-                >
-                  {item.icon}
-                </ListItemIcon>
-                {!isCollapsed && <ListItemText primary={item.label} />}
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Box>
+                <Icon className={cn("h-5 w-5 flex-shrink-0", !isCollapsed && "mr-3")} />
+                {!isCollapsed && <span className="truncate">{item.label}</span>}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
 
-      <Divider sx={{ borderColor: '#334155' }} />
+      <div className="h-px bg-slate-700" />
 
       {/* Bottom Menu */}
-      <Box sx={{ py: 1 }}>
-        <List>
-          {bottomMenuItems.map((item) => (
-            <ListItem key={item.href} disablePadding>
-              <ListItemButton
-                component={Link}
+      <div className="py-2">
+        <nav className="space-y-1">
+          {bottomMenuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
                 href={item.href}
-                sx={{
-                  minHeight: 48,
-                  justifyContent: isCollapsed ? 'center' : 'initial',
-                  px: 2,
-                  py: 1.5,
-                  color: pathname === item.href ? 'white' : '#cbd5e1',
-                  backgroundColor: pathname === item.href ? '#2563eb' : 'transparent',
-                  borderRight: pathname === item.href ? '2px solid #60a5fa' : 'none',
-                  '&:hover': {
-                    backgroundColor: pathname === item.href ? '#2563eb' : '#334155',
-                    color: 'white',
-                  },
-                }}
+                className={cn(
+                  "flex items-center px-3 py-2 text-sm font-medium transition-colors",
+                  isCollapsed ? "justify-center" : "justify-start",
+                  isActive
+                    ? "bg-blue-600 text-white border-r-2 border-blue-400"
+                    : "text-slate-300 hover:bg-slate-700 hover:text-white"
+                )}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: isCollapsed ? 'auto' : 3,
-                    justifyContent: 'center',
-                    color: 'inherit',
-                  }}
-                >
-                  {item.icon}
-                </ListItemIcon>
-                {!isCollapsed && <ListItemText primary={item.label} />}
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Box>
-    </Drawer>
+                <Icon className={cn("h-5 w-5 flex-shrink-0", !isCollapsed && "mr-3")} />
+                {!isCollapsed && <span className="truncate">{item.label}</span>}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+    </div>
   );
 };
 

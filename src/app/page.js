@@ -1,66 +1,55 @@
 'use client'
 import React from 'react';
-import {
-  Box,
-  Typography,
-  Button,
-  Container,
-  Grid,
-  Card,
-  CardContent,
-  Stack,
-  Chip,
-  Avatar,
-  Rating,
-  Divider
-} from '@mui/material';
-import {
-  ConfirmationNumber as TicketIcon,
-  Assignment as AssignmentIcon,
-  Insights as InsightsIcon,
-  Notifications as NotificationsIcon,
-  AutoAwesome as AutomationIcon,
-  Groups as CollaborationIcon,
-  ArrowForward as ArrowForwardIcon,
-  CheckCircle as CheckCircleIcon,
-  Star as StarIcon,
-  Timeline as TimelineIcon,
-  Security as SecurityIcon,
-  Dashboard as DashboardIcon
-} from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import {
+  Ticket,
+  ClipboardList,
+  LineChart,
+  Bell,
+  Sparkles,
+  Users,
+  ArrowRight,
+  CheckCircle2,
+  Star,
+  Clock, // Changed from Timeline to Clock
+  Shield,
+  LayoutDashboard
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const LandingPage = () => {
   const router = useRouter();
 
   const features = [
     {
-      icon: <TicketIcon sx={{ fontSize: 40, color: '#3B82F6' }} />,
+      icon: <Ticket className="w-10 h-10 text-blue-500" />,
       title: 'Smart Ticket Management',
       description: 'Automatically categorize, prioritize, and route tickets to the right agents based on content, urgency, and expertise.'
     },
     {
-      icon: <AssignmentIcon sx={{ fontSize: 40, color: '#10B981' }} />,
+      icon: <ClipboardList className="w-10 h-10 text-emerald-500" />,
       title: 'Automated Assignment',
       description: 'Intelligent ticket assignment based on agent workload, skills, and availability to ensure balanced distribution.'
     },
     {
-      icon: <TimelineIcon sx={{ fontSize: 40, color: '#F59E0B' }} />,
+      icon: <Clock className="w-10 h-10 text-amber-500" />, // Changed from Timeline to Clock
       title: 'SLA Tracking',
       description: 'Monitor response times and resolution deadlines with automated escalations and SLA compliance reporting.'
     },
     {
-      icon: <InsightsIcon sx={{ fontSize: 40, color: '#8B5CF6' }} />,
+      icon: <LineChart className="w-10 h-10 text-purple-500" />,
       title: 'Advanced Analytics',
       description: 'Comprehensive reporting on ticket volume, resolution times, agent performance, and customer satisfaction metrics.'
     },
     {
-      icon: <AutomationIcon sx={{ fontSize: 40, color: '#EF4444' }} />,
+      icon: <Sparkles className="w-10 h-10 text-red-500" />,
       title: 'Workflow Automation',
       description: 'Create custom workflows with triggers and actions to automate repetitive tasks and standardize processes.'
     },
     {
-      icon: <CollaborationIcon sx={{ fontSize: 40, color: '#06B6D4' }} />,
+      icon: <Users className="w-10 h-10 text-cyan-500" />,
       title: 'Team Collaboration',
       description: 'Internal notes, ticket handoffs, and knowledge sharing tools to improve team coordination and efficiency.'
     }
@@ -105,453 +94,246 @@ const LandingPage = () => {
 
   const ticketFeatures = [
     {
-      icon: <NotificationsIcon sx={{ color: '#3B82F6' }} />,
+      icon: <Bell className="w-8 h-8 text-blue-500" />,
       title: 'Smart Notifications',
       description: 'Never miss important updates with intelligent notification system'
     },
     {
-      icon: <SecurityIcon sx={{ color: '#10B981' }} />,
+      icon: <Shield className="w-8 h-8 text-emerald-500" />,
       title: 'Secure & Compliant',
       description: 'Enterprise-grade security with GDPR and SOC 2 compliance'
     },
     {
-      icon: <DashboardIcon sx={{ color: '#8B5CF6' }} />,
+      icon: <LayoutDashboard className="w-8 h-8 text-purple-500" />,
       title: 'Unified Dashboard',
       description: 'Complete overview of all tickets, metrics, and team performance'
     }
   ];
 
   return (
-    <Box sx={{ 
-      minHeight: '100vh',
-      backgroundColor: '#ffffff'
-    }}>
+    <div className="min-h-screen bg-white">
       {/* Professional Navigation Header */}
-      <Box sx={{ 
-        backgroundColor: '#ffffff',
-        borderBottom: '1px solid #e5e7eb',
-        position: 'sticky',
-        top: 0,
-        zIndex: 1000,
-        backdropFilter: 'blur(8px)'
-      }}>
-        <Container maxWidth="lg">
-          <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center',
-            py: 2
-          }}>
-            <Typography 
-              variant="h5" 
-              sx={{ 
-                fontWeight: 700,
-                color: '#1f2937',
-                fontSize: '1.75rem'
-              }}
-            >
+      <div className="sticky top-0 z-50 bg-white border-b border-gray-200 backdrop-blur">
+        <div className="container mx-auto max-w-7xl">
+          <div className="flex justify-between items-center py-4">
+            <h1 className="text-2xl font-bold text-gray-900">
               TicketFlow
-              <Box component="span" sx={{ color: '#3B82F6', ml: 0.5 }}>Pro</Box>
-            </Typography>
-            <Stack direction="row" spacing={1}>
+              <span className="text-blue-500 ml-1">Pro</span>
+            </h1>
+            <div className="flex space-x-2">
               <Button
-                variant="text"
+                variant="ghost"
                 onClick={() => router.push('/auth/login')}
-                sx={{
-                  color: '#6b7280',
-                  textTransform: 'none',
-                  fontWeight: 500,
-                  px: 3,
-                  '&:hover': {
-                    backgroundColor: '#f9fafb',
-                    color: '#1f2937'
-                  }
-                }}
+                className="text-gray-500 hover:text-gray-900"
               >
                 Sign In
               </Button>
               <Button
-                variant="contained"
                 onClick={() => router.push('/auth/signup')}
-                sx={{
-                  backgroundColor: '#3B82F6',
-                  color: 'white',
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  px: 3,
-                  boxShadow: '0 1px 3px rgba(59, 130, 246, 0.4)',
-                  '&:hover': {
-                    backgroundColor: '#2563eb',
-                    boxShadow: '0 4px 12px rgba(59, 130, 246, 0.4)'
-                  }
-                }}
+                className="bg-blue-500 text-white hover:bg-blue-600"
               >
                 Start Free Trial
               </Button>
-            </Stack>
-          </Box>
-        </Container>
-      </Box>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Professional Hero Section */}
-      <Box sx={{ 
-        backgroundColor: '#fafbfc',
-        borderBottom: '1px solid #e5e7eb'
-      }}>
-        <Container maxWidth="lg" sx={{ py: { xs: 6, md: 10 } }}>
-          <Grid container spacing={6} alignItems="center">
-            <Grid item xs={12} md={6}>
-              <Box>
-                <Chip 
-                  icon={<StarIcon sx={{ fontSize: 16 }} />}
-                  label="Trusted by 2000+ support teams worldwide" 
-                  sx={{ 
-                    backgroundColor: '#eff6ff',
-                    color: '#1e40af',
-                    mb: 3,
-                    fontWeight: 500,
-                    border: '1px solid #bfdbfe'
-                  }}
-                />
-                <Typography 
-                  variant="h2" 
-                  sx={{ 
-                    fontWeight: 800,
-                    mb: 3,
-                    lineHeight: 1.1,
-                    fontSize: { xs: '2.5rem', md: '3.75rem' },
-                    color: '#1f2937',
-                    letterSpacing: '-0.02em'
-                  }}
+      <div className="bg-gray-50 border-b border-gray-200">
+        <div className="container mx-auto max-w-7xl py-16 md:py-24">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-800 border border-blue-200 mb-6">
+                <Star className="w-4 h-4 mr-2" />
+                <span className="text-sm font-medium">Trusted by 2000+ support teams worldwide</span>
+              </div>
+              <h2 className="text-4xl md:text-6xl font-extrabold text-gray-900 tracking-tight leading-tight mb-6">
+                Professional Ticketing System
+              </h2>
+              <p className="text-lg md:text-xl text-gray-500 mb-8 leading-relaxed">
+                Transform your customer support with intelligent ticket management, automated workflows, 
+                and powerful analytics. Resolve tickets faster and keep customers happy.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                <Button
+                  size="lg"
+                  onClick={() => router.push('/auth/signup')}
+                  className="bg-blue-500 text-white hover:bg-blue-600"
                 >
-                  Professional Ticketing System
-                </Typography>
-                <Typography 
-                  variant="h6" 
-                  sx={{ 
-                    mb: 4,
-                    color: '#6b7280',
-                    lineHeight: 1.6,
-                    fontSize: { xs: '1.1rem', md: '1.25rem' },
-                    fontWeight: 400
-                  }}
+                  Start 14-Day Free Trial
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={() => router.push('/demo')}
+                  className="border-gray-300 hover:border-blue-500"
                 >
-                  Transform your customer support with intelligent ticket management, automated workflows, 
-                  and powerful analytics. Resolve tickets faster and keep customers happy.
-                </Typography>
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 4 }}>
-                  <Button
-                    variant="contained"
-                    size="large"
-                    onClick={() => router.push('/auth/signup')}
-                    endIcon={<ArrowForwardIcon />}
-                    sx={{
-                      backgroundColor: '#3B82F6',
-                      color: 'white',
-                      textTransform: 'none',
-                      fontWeight: 600,
-                      fontSize: '1rem',
-                      px: 4,
-                      py: 1.5,
-                      boxShadow: '0 4px 6px -1px rgba(59, 130, 246, 0.3)',
-                      '&:hover': {
-                        backgroundColor: '#2563eb',
-                        boxShadow: '0 10px 15px -3px rgba(59, 130, 246, 0.3)'
-                      }
-                    }}
-                  >
-                    Start 14-Day Free Trial
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    size="large"
-                    onClick={() => router.push('/demo')}
-                    sx={{
-                      color: '#3B82F6',
-                      borderColor: '#d1d5db',
-                      textTransform: 'none',
-                      fontWeight: 500,
-                      fontSize: '1rem',
-                      px: 4,
-                      py: 1.5,
-                      '&:hover': {
-                        borderColor: '#3B82F6',
-                        backgroundColor: '#f8fafc'
-                      }
-                    }}
-                  >
-                    Watch Demo
-                  </Button>
-                </Stack>
-                <Typography variant="body2" sx={{ color: '#9ca3af', fontSize: '0.875rem' }}>
-                  No credit card required • Full feature access • Setup in minutes
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Grid container spacing={2}>
-                {stats.map((stat, index) => (
-                  <Grid item xs={6} key={index}>
-                    <Card sx={{ 
-                      backgroundColor: '#ffffff',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: 2,
-                      textAlign: 'center',
-                      transition: 'all 0.2s ease',
-                      '&:hover': {
-                        borderColor: '#3B82F6',
-                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
-                      }
-                    }}>
-                      <CardContent sx={{ py: 3 }}>
-                        <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5, color: '#1f2937' }}>
-                          {stat.number}
-                        </Typography>
-                        <Typography variant="body1" sx={{ color: '#374151', fontWeight: 500, mb: 0.5 }}>
-                          {stat.label}
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: '#9ca3af' }}>
-                          {stat.subtext}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))}
-              </Grid>
-            </Grid>
-          </Grid>
-        </Container>
-      </Box>
+                  Watch Demo
+                </Button>
+              </div>
+              <p className="text-sm text-gray-400">
+                No credit card required • Full feature access • Setup in minutes
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {stats.map((stat, index) => (
+                <Card
+                  key={index}
+                  className="p-6 text-center border border-gray-200 hover:border-blue-500 transition-colors"
+                >
+                  <h3 className="text-3xl font-bold text-gray-900 mb-2">{stat.number}</h3>
+                  <p className="text-gray-700 font-medium mb-1">{stat.label}</p>
+                  <p className="text-gray-400 text-sm">{stat.subtext}</p>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Ticket Management Features */}
-      <Container maxWidth="lg" sx={{ py: { xs: 6, md: 8 } }}>
-        <Box sx={{ textAlign: 'center', mb: 6 }}>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#1f2937', mb: 2 }}>
+      <div className="container mx-auto max-w-7xl py-16 md:py-24">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
             Complete Ticket Lifecycle Management
-          </Typography>
-          <Typography variant="h6" sx={{ color: '#6b7280', fontWeight: 400 }}>
+          </h2>
+          <p className="text-xl text-gray-500">
             From creation to resolution, manage every aspect of your tickets
-          </Typography>
-        </Box>
-        <Grid container spacing={4}>
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {ticketFeatures.map((feature, index) => (
-            <Grid item xs={12} md={4} key={index}>
-              <Box sx={{ textAlign: 'center', p: 3 }}>
-                <Box sx={{ 
-                  width: 80, 
-                  height: 80, 
-                  backgroundColor: '#f8fafc', 
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  mx: 'auto',
-                  mb: 2,
-                  border: '1px solid #e5e7eb'
-                }}>
-                  {React.cloneElement(feature.icon, { sx: { fontSize: 32 } })}
-                </Box>
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: '#1f2937' }}>
-                  {feature.title}
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#6b7280' }}>
-                  {feature.description}
-                </Typography>
-              </Box>
-            </Grid>
+            <div key={index} className="text-center p-6">
+              <div className="w-20 h-20 mx-auto mb-4 bg-gray-50 rounded-full flex items-center justify-center border border-gray-200">
+                {feature.icon}
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                {feature.title}
+              </h3>
+              <p className="text-gray-500">
+                {feature.description}
+              </p>
+            </div>
           ))}
-        </Grid>
-      </Container>
+        </div>
+      </div>
 
       {/* Professional Features Section */}
-      <Box sx={{ backgroundColor: '#f9fafb', borderTop: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb' }}>
-        <Container maxWidth="lg" sx={{ py: { xs: 8, md: 12 } }}>
-          <Box sx={{ textAlign: 'center', mb: 8 }}>
-            <Typography 
-              variant="h3" 
-              sx={{ 
-                fontWeight: 700,
-                color: '#1f2937',
-                mb: 3,
-                fontSize: { xs: '2rem', md: '2.5rem' }
-              }}
-            >
+      <div className="bg-gray-50 border-y border-gray-200">
+        <div className="container mx-auto max-w-7xl py-16 md:py-24">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">
               Advanced Ticketing Features
-            </Typography>
-            <Typography 
-              variant="h6" 
-              sx={{ 
-                color: '#6b7280',
-                maxWidth: 600,
-                mx: 'auto',
-                lineHeight: 1.6,
-                fontWeight: 400
-              }}
-            >
+            </h2>
+            <p className="text-xl text-gray-500 max-w-2xl mx-auto">
               Everything you need to streamline your support operations and deliver exceptional service
-            </Typography>
-          </Box>
-          <Grid container spacing={4}>
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {features.map((feature, index) => (
-              <Grid item xs={12} md={4} key={index}>
-                <Card sx={{ 
-                  height: '100%',
-                  backgroundColor: '#ffffff',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: 2,
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    borderColor: '#3B82F6',
-                    transform: 'translateY(-4px)',
-                    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)'
-                  }
-                }}>
-                  <CardContent sx={{ p: 4 }}>
-                    <Box sx={{ mb: 3 }}>
-                      {feature.icon}
-                    </Box>
-                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#1f2937' }}>
-                      {feature.title}
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#6b7280', lineHeight: 1.6 }}>
-                      {feature.description}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
+              <Card
+                key={index}
+                className="p-8 border border-gray-200 hover:border-blue-500 transition-all duration-300 hover:-translate-y-1"
+              >
+                <div className="mb-6">
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-500 leading-relaxed">
+                  {feature.description}
+                </p>
+              </Card>
             ))}
-          </Grid>
-        </Container>
-      </Box>
+          </div>
+        </div>
+      </div>
 
       {/* Benefits and Testimonials Section */}
-      <Container maxWidth="lg" sx={{ py: { xs: 8, md: 12 } }}>
-        <Grid container spacing={8} alignItems="center">
-          <Grid item xs={12} md={6}>
-            <Typography variant="h3" sx={{ fontWeight: 700, mb: 3, color: '#1f2937' }}>
+      <div className="container mx-auto max-w-7xl py-16 md:py-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+          <div>
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">
               Why Choose TicketFlow?
-            </Typography>
-            <Typography variant="h6" sx={{ color: '#6b7280', mb: 4, lineHeight: 1.6, fontWeight: 400 }}>
+            </h2>
+            <p className="text-xl text-gray-500 mb-8 leading-relaxed">
               Our comprehensive ticketing platform includes everything your support team needs to deliver exceptional customer service efficiently.
-            </Typography>
-            <Grid container spacing={2}>
+            </p>
+            <div className="space-y-4">
               {benefits.map((benefit, index) => (
-                <Grid item xs={12} key={index}>
-                  <Stack direction="row" spacing={2} alignItems="center">
-                    <CheckCircleIcon sx={{ color: '#10B981', fontSize: 20 }} />
-                    <Typography variant="body1" sx={{ color: '#374151', fontWeight: 500 }}>
-                      {benefit}
-                    </Typography>
-                  </Stack>
-                </Grid>
+                <div key={index} className="flex items-center space-x-4">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                  <p className="text-gray-700 font-medium">{benefit}</p>
+                </div>
               ))}
-            </Grid>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Box sx={{ pl: { md: 4 } }}>
-              <Typography variant="h5" sx={{ fontWeight: 600, mb: 3, color: '#1f2937' }}>
-                Customer Success Stories
-              </Typography>
-              <Stack spacing={3}>
-                {testimonials.map((testimonial, index) => (
-                  <Card key={index} sx={{ 
-                    backgroundColor: '#ffffff',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: 2
-                  }}>
-                    <CardContent sx={{ p: 3 }}>
-                      <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
-                        <Avatar sx={{ width: 48, height: 48, backgroundColor: '#3B82F6' }}>
-                          {testimonial.name.charAt(0)}
-                        </Avatar>
-                        <Box>
-                          <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1f2937' }}>
-                            {testimonial.name}
-                          </Typography>
-                          <Typography variant="body2" sx={{ color: '#6b7280' }}>
-                            {testimonial.role}, {testimonial.company}
-                          </Typography>
-                          <Rating value={testimonial.rating} size="small" readOnly />
-                        </Box>
-                      </Stack>
-                      <Typography variant="body2" sx={{ color: '#374151', fontStyle: 'italic' }}>
-                        "{testimonial.comment}"
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                ))}
-              </Stack>
-            </Box>
-          </Grid>
-        </Grid>
-      </Container>
+            </div>
+          </div>
+          <div>
+            <h3 className="text-2xl font-semibold text-gray-900 mb-6">
+              Customer Success Stories
+            </h3>
+            <div className="space-y-6">
+              {testimonials.map((testimonial, index) => (
+                <Card key={index} className="p-6 border border-gray-200">
+                  <div className="flex items-start space-x-4 mb-4">
+                    <div className="w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center font-semibold text-lg">
+                      {testimonial.name.charAt(0)}
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
+                      <p className="text-gray-500">{testimonial.role}, {testimonial.company}</p>
+                      <div className="flex items-center mt-1">
+                        {[...Array(testimonial.rating)].map((_, i) => (
+                          <Star key={i} className="w-4 h-4 text-amber-400" />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-gray-700 italic">"{testimonial.comment}"</p>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Professional CTA Section */}
-      <Container maxWidth="md" sx={{ py: { xs: 8, md: 12 } }}>
-        <Card sx={{ 
-          backgroundColor: '#1f2937',
-          color: 'white',
-          textAlign: 'center',
-          borderRadius: 3,
-          overflow: 'hidden'
-        }}>
-          <CardContent sx={{ p: { xs: 4, md: 6 } }}>
-            <Typography variant="h3" sx={{ fontWeight: 700, mb: 2 }}>
-              Ready to Streamline Your Ticketing?
-            </Typography>
-            <Typography variant="h6" sx={{ opacity: 0.9, mb: 4, lineHeight: 1.6, fontWeight: 400 }}>
-              Join thousands of support teams using TicketFlow to resolve tickets faster, 
-              improve customer satisfaction, and boost team productivity.
-            </Typography>
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
-              <Button
-                variant="contained"
-                size="large"
-                onClick={() => router.push('/auth/signup')}
-                sx={{
-                  backgroundColor: '#3B82F6',
-                  color: 'white',
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  fontSize: '1.1rem',
-                  px: 4,
-                  py: 1.5,
-                  '&:hover': {
-                    backgroundColor: '#2563eb'
-                  }
-                }}
-              >
-                Start Free 14-Day Trial
-              </Button>
-              <Button
-                variant="outlined"
-                size="large"
-                onClick={() => router.push('/contact')}
-                sx={{
-                  color: 'white',
-                  borderColor: 'rgba(255, 255, 255, 0.3)',
-                  textTransform: 'none',
-                  fontWeight: 500,
-                  fontSize: '1.1rem',
-                  px: 4,
-                  py: 1.5,
-                  '&:hover': {
-                    borderColor: 'white',
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)'
-                  }
-                }}
-              >
-                Schedule Demo
-              </Button>
-            </Stack>
-            <Divider sx={{ my: 3, backgroundColor: 'rgba(255, 255, 255, 0.2)' }} />
-            <Typography variant="body2" sx={{ opacity: 0.7 }}>
-              No setup fees • Free migration assistance • 24/7 support included
-            </Typography>
-          </CardContent>
+      <div className="container mx-auto max-w-4xl py-16 md:py-24">
+        <Card className="bg-gray-900 text-white p-8 md:p-12 text-center">
+          <h2 className="text-4xl font-bold mb-4">
+            Ready to Streamline Your Ticketing?
+          </h2>
+          <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+            Join thousands of support teams using TicketFlow to resolve tickets faster, 
+            improve customer satisfaction, and boost team productivity.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
+            <Button
+              size="lg"
+              onClick={() => router.push('/auth/signup')}
+              className="bg-blue-500 text-white hover:bg-blue-600"
+            >
+              Start Free 14-Day Trial
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => router.push('/contact')}
+              className="border-gray-600 text-white hover:bg-gray-800"
+            >
+              Schedule Demo
+            </Button>
+          </div>
+          <div className="h-px bg-gray-700 my-6" />
+          <p className="text-gray-400">
+            No setup fees • Free migration assistance • 24/7 support included
+          </p>
         </Card>
-      </Container>
-    </Box>
+      </div>
+    </div>
   );
 };
 

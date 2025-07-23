@@ -1,23 +1,15 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Box,
-  Typography,
-  Paper,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Button,
-  Alert,
-  FormControlLabel,
-  Checkbox,
-  Breadcrumbs,
-  Link
-} from '@mui/material';
-import { ArrowBack, Save } from '@mui/icons-material';
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ArrowLeft, Save } from 'lucide-react';
 
 const businessHoursOptions = [
   'General working hours',
@@ -41,7 +33,7 @@ const CreateGroupPage = () => {
   const [alert, setAlert] = useState({ show: false, type: '', message: '' });
 
   const handleChange = (field) => (event) => {
-    const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+    const value = event?.target?.type === 'checkbox' ? event.target.checked : (event?.target?.value || event);
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -124,120 +116,136 @@ const CreateGroupPage = () => {
   };
 
   return (
-    <Box sx={{ p: 3, maxWidth: 800, mx: 'auto' }}>
+    <div className="p-6 max-w-[800px] mx-auto">
       {/* Breadcrumbs */}
-      <Breadcrumbs sx={{ mb: 2 }}>
-        <Link
-          component="button"
-          variant="body2"
+      <nav className="flex items-center gap-2 mb-4 text-sm">
+        <button
           onClick={handleBack}
-          sx={{ textDecoration: 'none', color: 'primary.main' }}
+          className="text-blue-600 hover:underline"
         >
           Groups
-        </Link>
-        <Typography variant="body2" color="text.primary">
+        </button>
+        <span className="text-slate-400">/</span>
+        <span className="text-slate-900">
           Create New Group
-        </Typography>
-      </Breadcrumbs>
+        </span>
+      </nav>
 
       {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+      <div className="flex items-center mb-6">
         <Button
-          startIcon={<ArrowBack />}
+          variant="ghost"
           onClick={handleBack}
-          sx={{ mr: 2, textTransform: 'none' }}
+          className="mr-4"
         >
+          <ArrowLeft className="h-4 w-4 mr-2" />
           Back
         </Button>
-        <Typography variant="h4" component="h1" sx={{ fontWeight: 600 }}>
+        <h1 className="text-2xl font-semibold text-slate-900">
           Create New Group
-        </Typography>
-      </Box>
+        </h1>
+      </div>
 
       {/* Alert */}
       {alert.show && (
         <Alert 
-          severity={alert.type} 
-          sx={{ mb: 3 }} 
+          variant={alert.type === 'error' ? 'destructive' : 'success'} 
+          className="mb-6"
           onClose={() => setAlert({ show: false, type: '', message: '' })}
         >
-          {alert.message}
+          <AlertDescription>{alert.message}</AlertDescription>
         </Alert>
       )}
 
       {/* Form */}
-      <Paper sx={{ p: 4 }}>
-        <form onSubmit={handleSubmit}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <TextField
-              label="Name"
+      <Card className="p-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <Label>Name *</Label>
+            <Input
               placeholder="e.g. Refund group"
               value={formData.name}
               onChange={handleChange('name')}
-              error={!!errors.name}
-              helperText={errors.name}
-              fullWidth
-              required
+              error={errors.name}
             />
-            
-            <TextField
-              label="Description"
+          </div>
+          
+          <div>
+            <Label>Description</Label>
+            <Textarea
               placeholder="e.g. This group will answer all queries related to refunds."
               value={formData.description}
               onChange={handleChange('description')}
-              multiline
               rows={4}
-              fullWidth
             />
-            
-            <FormControl fullWidth error={!!errors.businessHours}>
-              <InputLabel>Business Hours *</InputLabel>
-              <Select
-                value={formData.businessHours}
-                onChange={handleChange('businessHours')}
-                label="Business Hours *"
-              >
+          </div>
+          
+          <div>
+            <Label>Business Hours *</Label>
+            <Select
+              value={formData.businessHours}
+              onValueChange={handleChange('businessHours')}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select business hours" />
+              </SelectTrigger>
+              <SelectContent>
                 {businessHoursOptions.map((option) => (
-                  <MenuItem key={option} value={option}>
+                  <SelectItem key={option} value={option}>
                     {option}
-                  </MenuItem>
+                  </SelectItem>
                 ))}
-              </Select>
-            </FormControl>
-            
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={formData.addAgentsInNextStep}
-                  onChange={handleChange('addAgentsInNextStep')}
-                />
-              }
-              label="Add agents in the next step"
+              </SelectContent>
+            </Select>
+            {errors.businessHours && (
+              <p className="text-sm text-red-500 mt-1">{errors.businessHours}</p>
+            )}
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="addAgents"
+              checked={formData.addAgentsInNextStep}
+              onCheckedChange={handleChange('addAgentsInNextStep')}
             />
-            
-            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 2 }}>
-              <Button
-                variant="outlined"
-                onClick={handleBack}
-                disabled={loading}
-                sx={{ textTransform: 'none' }}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                variant="contained"
-                disabled={loading}
-                startIcon={<Save />}
-                sx={{ textTransform: 'none', minWidth: 120 }}
-              >
-                {loading ? 'Creating...' : 'Create Group'}
-              </Button>
-            </Box>
-          </Box>
+            <Label htmlFor="addAgents">
+              Add agents in the next step
+            </Label>
+          </div>
+          
+          <div className="flex justify-end gap-4 mt-8">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleBack}
+              disabled={loading}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="min-w-[120px]"
+            >
+              {loading ? (
+                <span className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Creating...
+                </span>
+              ) : (
+                <>
+                  <Save className="h-4 w-4 mr-2" />
+                  Create Group
+                </>
+              )}
+            </Button>
+          </div>
         </form>
-      </Paper>
-    </Box>
+      </Card>
+    </div>
   );
 };
 

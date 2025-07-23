@@ -1,336 +1,206 @@
 'use client'
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
-  Box,
-  Typography,
-  Button,
-  Card,
-  CardContent,
-  Grid,
-  Container,
-  InputBase,
-  IconButton,
-  Chip,
-  Link,
-  Divider
-} from '@mui/material';
-import {
-  Search as SearchIcon,
-  Add as AddIcon,
-  Settings as SettingsIcon,
-  Article as ArticleIcon,
-  Help as HelpIcon,
-  Build as BuildIcon,
-  Launch as ExternalLinkIcon
-} from '@mui/icons-material';
+  Search,
+  Plus,
+  Settings,
+  FileText,
+  HelpCircle,
+  Wrench,
+  ExternalLink,
+  MessageSquare
+} from 'lucide-react';
+import { cn } from "@/lib/utils";
 
 const KnowledgeBaseUI = () => {
   const router = useRouter();
 
   return (
-    <Box sx={{ bgcolor: '#f5f5f5', minHeight: '100vh' }}>
+    <div className="min-h-screen bg-slate-100">
       {/* Header */}
-      <Box sx={{ 
-        bgcolor: 'white', 
-        borderBottom: '1px solid #e0e0e0',
-        px: 3,
-        py: 2
-      }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
-            <SearchIcon sx={{ color: 'gray', mr: 1 }} />
-            <InputBase
+      <div className="bg-white border-b border-slate-200 px-6 py-4">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center flex-1">
+            <Search className="text-slate-400 mr-2 h-5 w-5" />
+            <Input
               placeholder="Search articles..."
-              sx={{ flex: 1, fontSize: '14px' }}
+              className="flex-1 text-sm border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
             />
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          </div>
+          <div className="flex items-center gap-4">
             <Button
-              variant="text"
-              sx={{ 
-                color: '#1976d2',
-                textTransform: 'none',
-                fontSize: '14px'
-              }}
+              variant="ghost"
+              className="text-blue-600 text-sm font-normal"
             >
               Manage
             </Button>
             <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              sx={{ 
-                bgcolor: '#1976d2',
-                textTransform: 'none',
-                fontSize: '14px'
-              }}
-              onClick={() => router.push('/solutions/create')} // Add this
+              onClick={() => router.push('/solutions/create')}
+              className="text-sm font-normal"
             >
+              <Plus className="h-4 w-4 mr-2" />
               New article
             </Button>
-            <IconButton size="small">
-              <ExternalLinkIcon fontSize="small" />
-            </IconButton>
-          </Box>
-        </Box>
-      </Box>
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <ExternalLink className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
 
-      <Container maxWidth="xl" sx={{ py: 3 }}>
+      <div className="max-w-7xl mx-auto py-6 px-4">
         {/* My drafts section */}
-        <Box sx={{ mb: 4 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="h6" sx={{ fontWeight: 500, color: '#333' }}>
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-medium text-slate-800">
               My drafts
-            </Typography>
-            <Link href="#" sx={{ color: '#1976d2', textDecoration: 'none', fontSize: '14px' }}>
+            </h2>
+            <Link href="#" className="text-blue-600 text-sm hover:underline">
               View all
             </Link>
-          </Box>
+          </div>
           
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={4}>
-              <Card sx={{ 
-                border: '1px solid #e0e0e0',
-                boxShadow: 'none',
-                '&:hover': { boxShadow: 1 }
-              }}>
-                <CardContent>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 1, color: '#1976d2' }}>
-                    How to Create a New User Account
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Last edited 7 days ago
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Card sx={{ 
-                border: '1px solid #e0e0e0',
-                boxShadow: 'none',
-                '&:hover': { boxShadow: 1 }
-              }}>
-                <CardContent>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 1, color: '#1976d2' }}>
-                    How to Update Software Settings
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Last edited 7 days ago
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Card sx={{ 
-                border: '1px solid #e0e0e0',
-                boxShadow: 'none',
-                '&:hover': { boxShadow: 1 }
-              }}>
-                <CardContent>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 1, color: '#1976d2' }}>
-                    What to Do if the Software Crashes Frequently
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Last edited 7 days ago
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-        </Box>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="border border-slate-200 hover:shadow-md transition-shadow">
+              <div className="p-4">
+                <h3 className="text-base font-medium text-blue-600 mb-1">
+                  How to Create a New User Account
+                </h3>
+                <p className="text-sm text-slate-500">
+                  Last edited 7 days ago
+                </p>
+              </div>
+            </Card>
+            <Card className="border border-slate-200 hover:shadow-md transition-shadow">
+              <div className="p-4">
+                <h3 className="text-base font-medium text-blue-600 mb-1">
+                  How to Update Software Settings
+                </h3>
+                <p className="text-sm text-slate-500">
+                  Last edited 7 days ago
+                </p>
+              </div>
+            </Card>
+            <Card className="border border-slate-200 hover:shadow-md transition-shadow">
+              <div className="p-4">
+                <h3 className="text-base font-medium text-blue-600 mb-1">
+                  What to Do if the Software Crashes Frequently
+                </h3>
+                <p className="text-sm text-slate-500">
+                  Last edited 7 days ago
+                </p>
+              </div>
+            </Card>
+          </div>
+        </div>
 
         {/* Categories section */}
-        <Box>
-          <Typography variant="h6" sx={{ fontWeight: 500, color: '#333', mb: 2 }}>
+        <div>
+          <h2 className="text-xl font-medium text-slate-800 mb-4">
             Categories (3)
-          </Typography>
+          </h2>
           
-          <Grid container spacing={2}>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* How tos */}
-            <Grid item xs={12} md={4}>
-              <Card sx={{ 
-                border: '1px solid #e0e0e0',
-                boxShadow: 'none',
-                minHeight: '200px',
-                '&:hover': { boxShadow: 1 }
-              }}>
-                <CardContent>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <ArticleIcon sx={{ color: '#1976d2', mr: 1 }} />
-                    <Typography variant="h6" sx={{ fontWeight: 500, color: '#333' }}>
-                      How tos
-                    </Typography>
-                  </Box>
-                  
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                    <Typography variant="body2" color="primary">
-                      Installation
-                    </Typography>
-                    <Chip 
-                      label="01" 
-                      size="small" 
-                      sx={{ 
-                        bgcolor: '#f0f0f0',
-                        color: '#666',
-                        fontSize: '12px'
-                      }} 
-                    />
-                  </Box>
-                  
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="body2" color="primary">
-                      Account creation
-                    </Typography>
-                    <Chip 
-                      label="01" 
-                      size="small" 
-                      sx={{ 
-                        bgcolor: '#f0f0f0',
-                        color: '#666',
-                        fontSize: '12px'
-                      }} 
-                    />
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
+            <Card className="border border-slate-200 hover:shadow-md transition-shadow min-h-[200px]">
+              <div className="p-4">
+                <div className="flex items-center mb-4">
+                  <FileText className="text-blue-600 h-5 w-5 mr-2" />
+                  <h3 className="text-lg font-medium text-slate-800">
+                    How tos
+                  </h3>
+                </div>
+                
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-sm text-blue-600">
+                    Installation
+                  </span>
+                  <Badge variant="secondary" className="text-xs">
+                    01
+                  </Badge>
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-blue-600">
+                    Account creation
+                  </span>
+                  <Badge variant="secondary" className="text-xs">
+                    01
+                  </Badge>
+                </div>
+              </div>
+            </Card>
 
             {/* FAQs */}
-            <Grid item xs={12} md={4}>
-              <Card sx={{ 
-                border: '1px solid #e0e0e0',
-                boxShadow: 'none',
-                minHeight: '200px',
-                '&:hover': { boxShadow: 1 }
-              }}>
-                <CardContent>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <HelpIcon sx={{ color: '#1976d2', mr: 1 }} />
-                    <Typography variant="h6" sx={{ fontWeight: 500, color: '#333' }}>
-                      FAQs
-                    </Typography>
-                  </Box>
-                  
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="body2" color="primary">
-                      Updating software
-                    </Typography>
-                    <Chip 
-                      label="01" 
-                      size="small" 
-                      sx={{ 
-                        bgcolor: '#f0f0f0',
-                        color: '#666',
-                        fontSize: '12px'
-                      }} 
-                    />
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
+            <Card className="border border-slate-200 hover:shadow-md transition-shadow min-h-[200px]">
+              <div className="p-4">
+                <div className="flex items-center mb-4">
+                  <HelpCircle className="text-blue-600 h-5 w-5 mr-2" />
+                  <h3 className="text-lg font-medium text-slate-800">
+                    FAQs
+                  </h3>
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-blue-600">
+                    Updating software
+                  </span>
+                  <Badge variant="secondary" className="text-xs">
+                    01
+                  </Badge>
+                </div>
+              </div>
+            </Card>
 
             {/* Troubleshooting */}
-            <Grid item xs={12} md={4}>
-              <Card sx={{ 
-                border: '1px solid #e0e0e0',
-                boxShadow: 'none',
-                minHeight: '200px',
-                '&:hover': { boxShadow: 1 }
-              }}>
-                <CardContent>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <BuildIcon sx={{ color: '#1976d2', mr: 1 }} />
-                    <Typography variant="h6" sx={{ fontWeight: 500, color: '#333' }}>
-                      Troubleshooting
-                    </Typography>
-                  </Box>
-                  
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                    <Typography variant="body2" color="primary">
-                      Software glitches and crashing
-                    </Typography>
-                    <Chip 
-                      label="01" 
-                      size="small" 
-                      sx={{ 
-                        bgcolor: '#f0f0f0',
-                        color: '#666',
-                        fontSize: '12px'
-                      }} 
-                    />
-                  </Box>
-                  
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="body2" color="primary">
-                      Login issues
-                    </Typography>
-                    <Chip 
-                      label="01" 
-                      size="small" 
-                      sx={{ 
-                        bgcolor: '#f0f0f0',
-                        color: '#666',
-                        fontSize: '12px'
-                      }} 
-                    />
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-        </Box>
-      </Container>
+            <Card className="border border-slate-200 hover:shadow-md transition-shadow min-h-[200px]">
+              <div className="p-4">
+                <div className="flex items-center mb-4">
+                  <Wrench className="text-blue-600 h-5 w-5 mr-2" />
+                  <h3 className="text-lg font-medium text-slate-800">
+                    Troubleshooting
+                  </h3>
+                </div>
+                
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-sm text-blue-600">
+                    Software glitches and crashing
+                  </span>
+                  <Badge variant="secondary" className="text-xs">
+                    01
+                  </Badge>
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-blue-600">
+                    Login issues
+                  </span>
+                  <Badge variant="secondary" className="text-xs">
+                    01
+                  </Badge>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </div>
 
       {/* Chat widget */}
-      <Box sx={{
-        position: 'fixed',
-        bottom: 20,
-        right: 20,
-        width: 50,
-        height: 50,
-        borderRadius: '50%',
-        bgcolor: '#333',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        cursor: 'pointer',
-        boxShadow: 3,
-        '&:hover': { bgcolor: '#555' }
-      }}>
-        <Box sx={{
-          width: 12,
-          height: 12,
-          bgcolor: '#ff5722',
-          borderRadius: '50%',
-          position: 'absolute',
-          top: 8,
-          right: 8,
-          fontSize: '8px',
-          color: 'white',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
+      <div className="fixed bottom-5 right-5 w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer hover:bg-slate-700 shadow-lg">
+        <div className="absolute top-2 right-2 w-3 h-3 bg-orange-500 rounded-full flex items-center justify-center text-[8px] text-white">
           1
-        </Box>
-        <Box sx={{
-          width: 24,
-          height: 24,
-          bgcolor: 'white',
-          borderRadius: '4px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
-          <Box sx={{
-            width: 16,
-            height: 16,
-            bgcolor: '#333',
-            borderRadius: '2px'
-          }} />
-        </Box>
-      </Box>
-    </Box>
+        </div>
+        <div className="w-6 h-6 bg-white rounded flex items-center justify-center">
+          <div className="w-4 h-4 bg-slate-800 rounded" />
+        </div>
+      </div>
+    </div>
   );
 };
 
